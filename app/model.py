@@ -3,24 +3,24 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy import Column, Integer, String, Float
-from datetime import datetime
+from sqlalchemy import Column, Integer, String, Float, DateTime
 
-# leave as None to manually connect and create tables
-# would then use:
+# # leave as None to manually connect and create tables
+# # would then use:
 # engine = create_engine("postgresql:///fitbit_db", echo = True)
-# then:
+# # then:
 # Base.metadata.create_all(engine)
 
 # ENGINE = None
 # SESSION = None
 
-# always connected
+# # always connected
 engine = create_engine("postgresql:///fitbit_db", echo = True)
 session = scoped_session(sessionmaker(bind = engine, autocommit = False, autoflush = False))
 
 Base = declarative_base()
 Base.query = session.query_property()
+
 
 
 class Users(Base):
@@ -31,7 +31,7 @@ class Users(Base):
   password = Column(String(20))
   first_name = Column(String(20))
   last_name = Column(String(20))
-  last_login = Column(DateTime, default = datetime.datetime.now())
+  last_login = Column(String(20))
   number_logins = Column(Integer)
   role = Column(String(20))
   user_key = Column(String(50), nullable = True)
@@ -44,17 +44,17 @@ class Activity(Base):
 
   id = Column(Integer, primary_key = True)
   user_id = Column(Integer, ForeignKey('users.id'))
-  floors = Column(Integer)
-  steps = Column(Integer)
-  sedentary_min = Column(Integer)
-  lightly_active_min = Column(Integer)
-  fairly_active_min = Column(Integer)
-  very_active_min = Column(Integer)
-  total_cal = Column(Integer)
-  bmr = Column(Integer)
-  activity_cals = Column(Integer)
-  distance = Column(Float)
-  date = Column(Integer)
+  floors = Column(Integer, nullable = True)
+  steps = Column(Integer, nullable = True)
+  sedentary_min = Column(Integer, nullable = True)
+  lightly_active_min = Column(Integer, nullable = True)
+  fairly_active_min = Column(Integer, nullable = True)
+  very_active_min = Column(Integer, nullable = True)
+  total_cal = Column(Integer, nullable = True)
+  bmr = Column(Integer, nullable = True)
+  activity_cals = Column(Integer, nullable = True)
+  distance = Column(Float, nullable = True)
+  date = Column(DateTime, nullable = True)
 
 
 # class Therapist(Base):
