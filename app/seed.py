@@ -1,6 +1,8 @@
 import model
 import datetime
 import fitbit
+from datetime import date
+import datetime
 
 # nested_dict = the data pulled from c = fitbit.Fitbit('c91f84cd10f04cebad9beb7d4812eb90', 'e2b38ed6dad443e8bad8efbe3e0e3da5', user_key="5fec83e8ad9ea52dd63b47a42b87b852", user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
 # user_info = nested_dict
@@ -9,112 +11,24 @@ user_info = {u'activities': [], u'goals': {u'floors': 10, u'caloriesOut': 2756, 
 
 
 def insert_activities(dictionary):
-  pass
-  # put all the functions in here
-
-def load_miles(dictionary):
-  distance_miles = dictionary['summary']['distances'][0]
-  miles = distance_miles['distance']
-  # print miles
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add(miles_updated)
-  model.session.commit()
-
-
-def load_calories(dictionary):
-  total_cals = user_info['summary']['caloriesOut']
-  print total_cals
-  #1633
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
-  model.session.commit()
-
-
-def load_steps(dictionary):
+  #aggregated all the functions into one
+  all_miles = dictionary['summary']['distances'][0]
+  total_miles = all_miles['distance']
+  total_cals = dictionary['summary']['caloriesOut']
   total_steps = dictionary['summary']['steps']
-  print total_steps
-  #8286
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
-  model.session.commit()
-
-
-def load_floors(dictionary):
   total_floors = dictionary['summary']['floors']
-  print total_floors
-  # 34
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
-  model.session.commit()
-
-
-def load_sedentary_min(dictionary):
-  total_mins = dictionary['summary']['sedentaryMinutes']
-  print total_mins
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  #1020
-  model.session.add()
-  model.session.commit()
-
-
-def load_lightly_active_min(dictionary):
-  total_mins = dictionary['summary']['lightlyActiveMinutes']
-  print total_mins
-  #70
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
-  model.session.commit()
-
-
-def load_fairly_active_min(dictionary):
-  total_mins = dictionary['summary']['fairlyActiveMinutes']
-  print total_mins
-  #51
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
-  model.session.commit()
-
-
-def load_very_active_min(dictionary):
-  total_mins = dictionary['summary']['veryActiveMinutes']
-  print total_mins
-  #43
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
-  model.session.commit()
-
-
-def  load_bmr(dictionary):
+  s_mins = dictionary['summary']['sedentaryMinutes']
+  la_mins = dictionary['summary']['lightlyActiveMinutes']
+  fa_mins = dictionary['summary']['fairlyActiveMinutes']
+  va_mins = dictionary['summary']['veryActiveMinutes']
   bmr = dictionary['summary']['caloriesBMR']
-  print bmr
-  #1118
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
-  model.session.commit()
-
-
-def load_activity_cals(dictionary):
   activity_cals = dictionary['summary']['activityCalories']
-  print activity_cals
-  #670
-  miles_updated = model.Activity(id = None, user_id = None, floors = None, steps = None, sedentary_min = None, lightly_active_min = None, fairly_active_min = None, very_active_min = None, total_cal = None, bmr = None, activity_cals = None, distance = miles, date = None)
-  model.session.add()
+  date = datetime.datetime.now()
+  # date = datetime.date.today()
+  everything_updated = model.Activity(id = None, user_id = None, floors = total_floors, steps = total_steps, sedentary_min = s_mins, lightly_active_min = la_mins, fairly_active_min = fa_mins, very_active_min = va_mins, total_cal = total_cals, bmr = bmr, activity_cals = activity_cals, distance = total_miles, date = date)
+  #figure out how to get timestamp in db
+  model.session.add(everything_updated)
   model.session.commit()
 
-# if I want to format the datetime object in db, do the below in a function
-# time_from_column = row[index into row]
-# format_time = datetime.strptime(time_from_column, "%d-%b-%Y")
+insert_activities(user_info)
 
-def all_funs():
-  load_calories(user_info)
-  load_activity_cals(user_info)
-  load_bmr(user_info)
-  load_very_active_min(user_info)
-  load_fairly_active_min(user_info)
-  load_lightly_active_min(user_info)
-  load_sedentary_min(user_info)
-  load_floors(user_info)
-  load_steps(user_info)
-  # load_miles(user_info)
-
-all_funs()
