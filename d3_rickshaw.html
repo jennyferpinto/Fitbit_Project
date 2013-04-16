@@ -1,0 +1,18 @@
+    <script type="text/javascript" src="{{ 'js/d3.min.js' | static }}"></script>
+    <script type="text/javascript" src="{{ 'js/rickshaw.js' | static }}"></script>
+
+    stuff above goes in one of the template files
+
+
+the stuff below goes in the views file
+
+    // <script type="text/javascript">
+var activityData = [
+  {% for a in user.activities %}
+    {x: '{{ a.date.strftime('%Y-%m-%d') }}',
+     y: {{ a.total_cal}}},
+  {% endfor %}
+];
+
+new Rickshaw.chart({data: activityData})
+// </script>
