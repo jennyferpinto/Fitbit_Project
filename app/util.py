@@ -1,7 +1,7 @@
 import model
 import datetime
 
-def insert_activities(dictionary):
+def insert_activities(dictionary, user_id):
   # inserts user's synced activity data into the database
   all_miles = dictionary['summary']['distances'][0]
   total_miles = all_miles['distance']
@@ -16,7 +16,7 @@ def insert_activities(dictionary):
   activity_cals = dictionary['summary']['activityCalories']
   date = datetime.datetime.now()
   # date = datetime.date.today()
-  everything_updated = model.Activity(id=None, user_id=None,
+  everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
                                       steps=total_steps,
                                       sedentary_min=s_mins,
