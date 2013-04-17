@@ -18,7 +18,7 @@
 <p>
   Password: <br>
   {{form.password(size = 30)}}<br>
-  {% for error in form.errors.email %}
+  {% for error in form.errors.password %}
   <span style = "color: red;">[{{error}}]</span>
   {% endfor %}<br>
 </p>

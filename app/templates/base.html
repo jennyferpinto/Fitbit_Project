@@ -1,13 +1,25 @@
 <html>
+
   <head>
+    <style>
+      a.btn {
+        display: inline-block;
+        color: #AC3;
+        padding: 5px;
+        border: 1px solid #555;
+        border-radius: 5px 5px;
+      }
+    </style>
+    <link rel="stylesheet" href="/static/css/whatever.css">
     {% if title %}
     <title> {{title}} </title>
     {% else %}
     <title> Home </title>
     {% endif %}
   </head>
+
   <body>
-      <div>Insert Website Name: <a href = "/home"> Home </a></div>
+      <div>Therapanel: <a href = "/home"> Home </a></div>
       <div> <a href = "/login"> Login </a></div>
       <hr>
       {% with messages = get_flashed_messages() %}
@@ -23,4 +35,5 @@
         {% block body %} {% endblock %}
       </div>
   </body>
+
 </html>

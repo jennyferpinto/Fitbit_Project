@@ -7,6 +7,8 @@ import model
 from flask.ext.login import LoginManager, current_user
 from model import Users, Activity
 from flaskext.bcrypt import Bcrypt
+import util
+import fitbit
 
 # below all needed for Flask-Login to work
 login_manager = LoginManager()
@@ -24,12 +26,10 @@ bcrypt = Bcrypt(app)
 def home():
   return render_template("base.html")
 
-
 # allows user_id to be held between page loads
 @login_manager.user_loader
 def load_user(user_id):
   return Users.query.get(int(user_id))
-
 
 @app.route("/login", methods = ["GET", "POST"])
 def login():
@@ -53,19 +53,16 @@ def login():
       return redirect("login")
   return render_template("login.html", title="Sign In", form=form)
 
-
 @app.route("/test_page")
 @login_required
 def tester():
   return render_template('page.html')
-
 
 @app.route("/logout")
 @login_required
 def logout():
   logout_user()
   return redirect(url_for("home"))
-
 
 @app.route('/signup', methods = ["POST","GET"])
 def form():
@@ -86,7 +83,6 @@ def form():
       print "---------------------"
       print pw_hash
       print "---------------------"
-      # hashed = bcrypt.hashpw(password, bcrypt.gensalt())
       new_user = model.Users(id = None, email=email, password=pw_hash,first_name=first_name, last_name=last_name)
       model.session.add(new_user)
       model.session.commit()
@@ -97,23 +93,42 @@ def form():
 # def login_done():
 #   return render_template('login_done.html')
 
+@app.route('/sync_fitbit', methods = ["GET"])
+@login_required
+def fitbit_sync():
+  user = fitbit.Fitbit('c91f84cd10f04cebad9beb7d4812eb90',
+                       'e2b38ed6dad443e8bad8efbe3e0e3da5',
+                       user_key="5fec83e8ad9ea52dd63b47a42b87b852",
+                       user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
+  user_info = user.activities()
+  new_activity = util.insert_activities(user_info)
+  model.session.add(new_activity)
+  model.session.commit()
+  return redirect(url_for("patient_home"))
 
-@app.route('/patient_home', methods = ["GET", "POST"])
+
+@app.route('/patient_home', methods = ["POST", "GET"])
+@login_required
 def patient_home():
   activity = fetch_test_activity_row()
+  print activity
   floors = activity.floors
   print floors
-  stairs = activity.stairs
-  print stairs
+  steps = activity.steps
+  print steps
   distance = activity.distance
   print distance
-  time_object = activity.date # is a datetime object, have to use strptime()
+  time_object = activity.date
   string_time = str(time_object)
   stripped_time = string_time[:11]
   print stripped_time
-  return render_template("patient_home.html")
-
+  return render_template("patient_home.html", title = "Patient",
+                          steps=steps,
+                          floors=floors,
+                          distance=distance,
+                          stripped_time=stripped_time)
 
 def fetch_test_activity_row():
   return model.session.query(Activity).get("5")
-  # change it to fetch_test_user after I insert a user_id into the activities db table
+  # return session.query(Activity).order_by(Activity.id.desc()).first()
+# change it to fetch_test_user after I insert a user_id into the activities db table
