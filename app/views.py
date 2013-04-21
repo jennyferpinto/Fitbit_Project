@@ -9,6 +9,9 @@ from model import Users, Activity
 from flaskext.bcrypt import Bcrypt
 import util
 import fitbit
+from sqlalchemy import desc
+import datetime
+import json
 
 # below all needed for Flask-Login to work
 login_manager = LoginManager()
@@ -36,6 +39,8 @@ def load_user(user_id):
 
 @app.route("/login", methods = ["GET", "POST"])
 def login():
+  # update the last_login and number of logins everytime that the user logs into the db
+  # dont allow user to re-login after they've done so
   form = LoginForm()
   if form.validate_on_submit():
     user = model.session.query(Users).filter(Users.email == form.email.data).first()
@@ -49,11 +54,15 @@ def login():
     # print "--------------"
     if user is not None and unhashed_pwrd == True:
       login_user(user)
+      user.last_login = datetime.datetime.utcnow()
+      user.number_logins += 1
+      model.session.commit()
       flash("logged in successfully")
-      return redirect(url_for("tester"))
+      return redirect(url_for("patient_home"))
     else:
       flash("Incorrect Password")
       return redirect("login")
+    # if current_user.id
   return render_template("login.html", title="Sign In", form=form)
 
 @app.route("/test_page")
@@ -73,6 +82,7 @@ def logout():
 
 @app.route('/signup', methods = ["POST","GET"])
 def form():
+  #insert role into the sign up form, to differentiate btwn patients/therapists
   form = SignUpForm()
   if form.validate_on_submit():
     user = model.session.query(Users).filter(Users.email == form.email.data).first()
@@ -84,9 +94,11 @@ def form():
     if user == None:
       first_name = form.first_name.data
       last_name = form.last_name.data
+      # role = form.role.data
       email = form.email.data
       password = form.password.data
       pw_hash = bcrypt.generate_password_hash(password)
+      number_logins = 0
       # print "---------------------"
       # print pw_hash
       # print "---------------------"
@@ -94,9 +106,11 @@ def form():
                             email=email,
                             password=pw_hash,
                             first_name=first_name,
-                            last_name=last_name)
+                            last_name=last_name,
+                            number_logins=number_logins)
       model.session.add(new_user)
       model.session.commit()
+      flash("Account Creation successful, Login to your account")
       return redirect("home")
   return render_template("signup.html", title="Sign Up Form", form=form)
 
@@ -127,7 +141,7 @@ def fitbit_sync():
 @app.route('/patient_home', methods = ["POST", "GET"])
 @login_required
 def patient_home():
-  activity = fetch_test_activity_row()
+  activity = fetch_most_recent_activity()
   print activity
   floors = activity.floors
   print floors
@@ -146,7 +160,79 @@ def patient_home():
                           distance=distance,
                           stripped_time=stripped_time)
 
-def fetch_test_activity_row():
-  return model.session.query(Activity).get("5")
-  # return session.query(Activity).order_by(Activity.id.desc()).first()
-# change it to fetch_test_user after I insert a user_id into the activities db table
+
+@app.route('/weekly_steps', methods = ["GET"])
+@login_required
+def steps_week_chart():
+  current_user_id = current_user.id
+  all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
+  steps = util.weekly_steps(all_user_activity)
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.asc()).filter(Activity.user_id == current_user_id).limit(7)
+  # all_steps = all_user_activity.steps
+  # cant use dates on a bar graph...
+  dates = util.dates_for_week(all_user_activity)
+  # have to put 0-however many bars in the x-axis for the graph to render
+  data_steps = [
+      { 'x': 0, 'y': steps[0] },
+      { 'x': 1, 'y': steps[1] },
+      { 'x': 2, 'y': steps[2] },
+      { 'x': 3, 'y': steps[3] },
+      { 'x': 4, 'y': steps[4] },
+      { 'x': 5, 'y': steps[5] },
+      { 'x': 6, 'y': steps[6] }
+      ]
+  jsonified_steps_data = json.dumps(data_steps)
+  weekly_steps_data = jsonified_steps_data.replace('"','')
+
+  stairs = util.weekly_floors(all_user_activity)
+  data_stairs = [
+      { 'x': 0, 'y': stairs[0] },
+      { 'x': 1, 'y': stairs[1] },
+      { 'x': 2, 'y': stairs[2] },
+      { 'x': 3, 'y': stairs[3] },
+      { 'x': 4, 'y': stairs[4] },
+      { 'x': 5, 'y': stairs[5] },
+      { 'x': 6, 'y': stairs[6] }
+      ]
+  jsonified_stairs_data = json.dumps(data_stairs)
+  weekly_stairs_data = jsonified_stairs_data.replace('"','')
+
+  miles = util.weekly_miles(all_user_activity)
+  data_miles = [
+      { 'x': 0, 'y': miles[0] },
+      { 'x': 1, 'y': miles[1] },
+      { 'x': 2, 'y': miles[2] },
+      { 'x': 3, 'y': miles[3] },
+      { 'x': 4, 'y': miles[4] },
+      { 'x': 5, 'y': miles[5] },
+      { 'x': 6, 'y': miles[6] }
+      ]
+  jsonified_miles_data = json.dumps(data_miles)
+  weekly_miles_data = jsonified_miles_data.replace('"','')
+  return render_template("steps_weekly.html",
+                        weekly_steps_data=weekly_steps_data,
+                        weekly_stairs_data=weekly_stairs_data,
+                        weekly_miles_data=weekly_miles_data)
+
+@app.route('/steps', methods = ["GET"])
+@login_required
+def steps_current_day():
+  # today_user_info = model.session.query(Activity).filter(Activity.user_id == "3")
+  # steps_today = today_user_info.steps
+  recent_activity = fetch_most_recent_activity()
+  steps_today = recent_activity.steps
+  return render_template("steps_today.html", steps_today=steps_today)
+
+# user_3_activity = session.query(Activity).filter(Activity.user_id == "3").first()
+# most_recent_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == 3).first()
+
+def fetch_most_recent_activity():
+  current_user_id = current_user.id
+  return model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
+
+
+# import json and user json.dumps()
+# put in the data in the views function
+# json.dumps(pass in variable name)
+
+# in the JS for the view var my_data{{data|safe}}

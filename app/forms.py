@@ -13,11 +13,11 @@ class LoginForm(Form):
 
 class SignUpForm(Form):
   first_name = TextField('first_name',
-                        validators = [Required()])
+                        validators=[Required()])
   last_name = TextField('last_name',
-                        validators = [Required()])
+                        validators=[Required()])
   email = TextField('first_email',
-                    validators = [Required(),
+                    validators=[Required(),
                     v.Email(),
                     v.EqualTo('confirm_email',
                     message = "Emails have to match")])

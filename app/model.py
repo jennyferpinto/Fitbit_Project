@@ -33,7 +33,7 @@ class Users(Base):
   password = Column(String(255))
   first_name = Column(String(30))
   last_name = Column(String(30))
-  last_login = Column(String(50))
+  last_login = Column(DateTime, nullable = True)
   number_logins = Column(Integer)
   role = Column(String(20))
   user_key = Column(String(255), nullable = True)
