@@ -2,7 +2,36 @@
 
 {% block body %}
 
-<h1> Set Goals for {{name}} </h1>
+<h1>Set Goals for {{name}}</h1>
 
+<form method = "POST" action = "/set_goals" name = "goal_page">
+  {{form.hidden_tag()}}
+
+<p>
+  Steps: <br>
+  {{form.steps(size = 30)}}<br>
+  {% for error in form.errors.steps %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p>
+  Floors: <br>
+  {{form.floors(size = 30)}}<br>
+  {% for error in form.errors.floors %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p>
+  Distance: <br>
+  {{form.distance(size = 30)}}<br>
+  {% for error in form.errors.distance %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p><input type="submit" class="btn" value="Submit"></input></p>
+</form>
 
 {% endblock %}

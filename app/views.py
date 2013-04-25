@@ -2,7 +2,7 @@ from app import app
 from flask import Flask, render_template, redirect, request, session
 from flask import request, g, flash, url_for
 from flask.ext.login import login_user, logout_user, login_required
-from forms import LoginForm, SignUpForm
+from forms import LoginForm, SignUpForm, GoalsForm
 import model
 from flask.ext.login import LoginManager, current_user
 from model import Users, Activity
@@ -183,7 +183,7 @@ def therapists_patient_view():
   weekly_miles_data = util.patients_weekly_miles(all_user_activity)
   days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
   daily_data = util.day_view(days_activity)
-  return render_template("therapists_patient_view.html", title = "Patient_Info",
+  return render_template("therapists_patient_view.html", title = "Patient Info",
                         weekly_steps_data=weekly_steps_data,
                         weekly_floors_data=weekly_floors_data,
                         weekly_miles_data=weekly_miles_data,
@@ -192,14 +192,23 @@ def therapists_patient_view():
                         patient_id=patient_id)
 
 
-@app.route('/set_goals', methods = ["GET", "POST"])
+@app.route('/set_goals', methods = ["POST", "GET"])
 @login_required
 def set_goals():
   patient_id = request.args.get('patient_id', 0)
-  new_goals = model.Goal(user_id = patient_id)
-  model.session.add(new_goals)
-  model.session.commit()
-  return redirect(url_for("set_goals"))
+  patient = model.session.query(Users).filter(Users.id == patient_id).first()
+  name = patient.first_name
+  form = GoalsForm()
+  if form.validate_on_submit():
+    steps = form.steps.data
+    floors = form.floors.data
+    distance = form.distance.data
+    new_goals = model.Goal(user_id = patient_id, steps_goal = steps, floors_goal = floors, distance_goal = distance)
+    model.session.add(new_goals)
+    model.session.commit()
+    return redirect(url_for("therapists_patient_view"))
+  return render_template("set_goals.html", title = "Set Goals", name = name)
+
 
 @app.route('/patient_home', methods = ["POST", "GET"])
 @login_required
@@ -255,8 +264,3 @@ def steps_week_chart():
                         weekly_steps_data=weekly_steps_data,
                         weekly_floors_data=weekly_floors_data,
                         weekly_miles_data=weekly_miles_data)
-
-
-def fetch_most_recent_activity():
-
-  return

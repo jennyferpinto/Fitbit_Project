@@ -1,4 +1,4 @@
-from flask.ext.wtf import Form, TextField, BooleanField, PasswordField
+from flask.ext.wtf import Form, TextField, BooleanField, PasswordField, IntegerField
 from flask.ext.wtf import Required
 from wtforms import validators as v
 import model
@@ -32,6 +32,17 @@ class SignUpForm(Form):
                           v.EqualTo('confirm_password',
                           message = 'Passwords must match')])
   confirm_password = PasswordField('Repeat Password')
+
+
+class GoalsForm(Form):
+  steps = IntegerField('steps',
+                      validators=[Required()])
+  floors = IntegerField('floors',
+                      validators=[Required()])
+  distance = IntegerField('distance',
+                      validators=[Required()])
+
+
 
 
 # class DateForm(Form):
