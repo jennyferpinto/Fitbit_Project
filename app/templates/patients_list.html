@@ -6,7 +6,9 @@
 
 {% for patients in patients_list %}
 
-{{patients.first_name}}
+  {{patients.first_name}}
+
+  <a class="btn" href="{{url_for("therapists_patient_view")}}?patient_id={{patients.id}}">Info</a>
 
 {% endfor %}
 

@@ -166,6 +166,41 @@ def patients_list():
                         name = name,
                         patients_list = patients_list)
 
+
+@app.route('/therapists_patient_view', methods = ["POST","GET"])
+@login_required
+def therapists_patient_view():
+  therapist_id = current_user.id
+  patient_info = model.session.query(Users).filter(Users.therapist == therapist_id).all()
+  # query for patient's id
+  patient_id = request.args.get('patient_id', 0)
+  # activity = patient_info[0].activities
+  patient = model.session.query(Users).filter(Users.id == patient_id).first()
+  name = patient.first_name
+  all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).limit(7)
+  weekly_steps_data = util.patients_weekly_steps(all_user_activity)
+  weekly_floors_data = util.patients_weekly_floors(all_user_activity)
+  weekly_miles_data = util.patients_weekly_miles(all_user_activity)
+  days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
+  daily_data = util.day_view(days_activity)
+  return render_template("therapists_patient_view.html", title = "Patient_Info",
+                        weekly_steps_data=weekly_steps_data,
+                        weekly_floors_data=weekly_floors_data,
+                        weekly_miles_data=weekly_miles_data,
+                        daily_data=daily_data,
+                        name=name,
+                        patient_id=patient_id)
+
+
+@app.route('/set_goals', methods = ["GET", "POST"])
+@login_required
+def set_goals():
+  patient_id = request.args.get('patient_id', 0)
+  new_goals = model.Goal(user_id = patient_id)
+  model.session.add(new_goals)
+  model.session.commit()
+  return redirect(url_for("set_goals"))
+
 @app.route('/patient_home', methods = ["POST", "GET"])
 @login_required
 def patient_home():
@@ -173,31 +208,22 @@ def patient_home():
   return render_template("patient_home.html", title = "Patient",
                         name = name)
 
+
 @app.route('/day_view', methods = ["POST", "GET"])
 @login_required
 def day_view():
+  current_user_id = current_user.id
   name = current_user.first_name
-  # get the most recent row inserted into db
-  activity = fetch_most_recent_activity()
-  # gets flights of stairs climbed
-  floors = activity.floors
-  # gets steps taken
-  steps = activity.steps
-  # gets miles walked
-  distance = activity.distance
-  time_object = activity.date
+  days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
+  # gets all the floors, steps, distance info to display it as text
+  floors = days_activity.floors
+  steps = days_activity.steps
+  distance = days_activity.distance
+  time_object = days_activity.date
   string_time = str(time_object)
   # stripped the time to exclude everything but year, month, day
   stripped_time = string_time[:11]
-  print stripped_time
-  daily_dataset = [
-      {'x': 0, 'y': floors},
-      {'x': 1, 'y': steps},
-      {'x': 2, 'y': distance},
-      ]
-  jsonified_daily_data = json.dumps(daily_dataset)
-  daily_data = jsonified_daily_data.replace('"','')
-
+  daily_data = util.day_view(days_activity)
   return render_template("day_view.html", title = "Day",
                         floors = floors,
                         steps = steps,
@@ -221,53 +247,9 @@ def day_view():
 @login_required
 def steps_week_chart():
   current_user_id = current_user.id
-  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
-  # steps = util.weekly_steps(all_user_activity)
-  # # all_user_activity = model.session.query(Activity).order_by(Activity.date.asc()).filter(Activity.user_id == current_user_id).limit(7)
-  # # all_steps = all_user_activity.steps
-  # # cant use dates on a bar graph...
-  # dates = util.dates_for_week(all_user_activity)
-  # # have to put 0-however many bars in the x-axis for the graph to render
-  # data_steps = [
-  #     { 'x': 0, 'y': steps[0] },
-  #     { 'x': 1, 'y': steps[1] },
-  #     { 'x': 2, 'y': steps[2] },
-  #     { 'x': 3, 'y': steps[3] },
-  #     { 'x': 4, 'y': steps[4] },
-  #     { 'x': 5, 'y': steps[5] },
-  #     { 'x': 6, 'y': steps[6] }
-  #     ]
-  # # data_step_tuples = steps_by_day(all_user_activity)
-  # # data_steps = [ {"x": int(t[0]), "y": t[1]} for t in data_step_tuples]
-  # jsonified_steps_data = json.dumps(data_steps)
-  # weekly_steps_data = jsonified_steps_data.replace('"','')
   all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
   weekly_steps_data = util.patients_weekly_steps(all_user_activity)
-  # stairs = util.weekly_floors(all_user_activity)
-  # data_stairs = [
-  #     { 'x': 0, 'y': stairs[0] },
-  #     { 'x': 1, 'y': stairs[1] },
-  #     { 'x': 2, 'y': stairs[2] },
-  #     { 'x': 3, 'y': stairs[3] },
-  #     { 'x': 4, 'y': stairs[4] },
-  #     { 'x': 5, 'y': stairs[5] },
-  #     { 'x': 6, 'y': stairs[6] }
-  #     ]
-  # jsonified_stairs_data = json.dumps(data_stairs)
-  # weekly_stairs_data = jsonified_stairs_data.replace('"','')
   weekly_floors_data = util.patients_weekly_floors(all_user_activity)
-  # miles = util.weekly_miles(all_user_activity)
-  # data_miles = [
-  #     { 'x': 0, 'y': miles[0] },
-  #     { 'x': 1, 'y': miles[1] },
-  #     { 'x': 2, 'y': miles[2] },
-  #     { 'x': 3, 'y': miles[3] },
-  #     { 'x': 4, 'y': miles[4] },
-  #     { 'x': 5, 'y': miles[5] },
-  #     { 'x': 6, 'y': miles[6] }
-  #     ]
-  # jsonified_miles_data = json.dumps(data_miles)
-  # weekly_miles_data = jsonified_miles_data.replace('"','')
   weekly_miles_data = util.patients_weekly_miles(all_user_activity)
   return render_template("steps_weekly.html",
                         weekly_steps_data=weekly_steps_data,
@@ -276,5 +258,5 @@ def steps_week_chart():
 
 
 def fetch_most_recent_activity():
-  current_user_id = current_user.id
-  return model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
+
+  return

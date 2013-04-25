@@ -40,7 +40,7 @@ class Users(Base):
   user_key = Column(String(255), nullable = True)
   user_secret = Column(String(255), nullable = True)
   activities = relationship("Activity", backref = "users")
-  # goals = relationship("Goal", backref = "user")
+  goals = relationship("Goal", backref = "users")
 
   def is_authenticated(self):
     return True
@@ -57,6 +57,19 @@ class Users(Base):
   # def __repr__(self):
   #   return '<User %r' % (self.name)
 
+
+class Goal(Base):
+  __tablename__ = "goals"
+
+  id = Column(Integer, primary_key=True)
+  user_id = Column(Integer, ForeignKey('users.id'))
+  step_goal = Column(Integer, nullable=True)
+  floors_goal = Column(Integer, nullable=True)
+  distance_goal = Column(Float, nullable=True)
+  sendentary_min_goal = Column(Integer, nullable=True)
+  lightly_active_min_goal = Column(Integer, nullable=True)
+  fairly_active_min_goal = Column(Integer, nullable=True)
+  very_active_min_goal = Column(Integer, nullable=True)
 
 class Activity(Base):
   __tablename__ = "activities"

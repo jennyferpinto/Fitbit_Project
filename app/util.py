@@ -166,3 +166,19 @@ def patients_weekly_miles(query):
   jsonified_miles_data = json.dumps(data_miles)
   weekly_miles_data = jsonified_miles_data.replace('"','')
   return weekly_miles_data
+
+def day_view(query):
+  days_activity = query
+  floors = days_activity.floors
+  steps = days_activity.steps
+  distance = days_activity.distance
+  time_object = days_activity.date
+  string_time = str(time_object)
+  daily_dataset = [
+      {'x': 0, 'y': floors},
+      {'x': 1, 'y': steps},
+      {'x': 2, 'y': distance},
+      ]
+  jsonified_daily_data = json.dumps(daily_dataset)
+  daily_data = jsonified_daily_data.replace('"','')
+  return daily_data
