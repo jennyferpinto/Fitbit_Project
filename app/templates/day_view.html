@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<form method = "POST" action = "/day_view" name = "day">
+<h1> {{name}} - Patient Info </h1>
+<p> Floors: {{floors}}</p>
+<p> Steps: {{steps}}</p>
+<p> Distance: {{distance}}</p>
+<p> Date: {{stripped_time}}</p>
+<p>{{daily_data}}</p>
+</form>
+
+<p> Welcome, {{name}} </p>
+
+<a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a>
+<a class="btn" href="{{url_for("steps_week_chart")}}">Week</a>
+
+<script src="/static/js/d3.min.js"></script>
+<script src="/static/js/rickshaw.min.js"></script>
+<script src="/static/js/Rickshaw.Graph.Axis.Time.js"></script>
+<script src="/static/js/Rickshaw.Graph.Axis.X.js"></script>
+<script src="/static/js/Rickshaw.Graph.Axis.Y.js"></script>
+
+<div id="chart"></div>
+
+<script>
+var graph = new Rickshaw.Graph( {
+    element: document.querySelector("#chart"),
+    width: 235,
+    height: 85,
+    renderer: 'bar',
+    series: [ {
+        data: {{daily_data}},
+        color: 'steelblue'
+    } ]
+} );
+
+graph.render();
+
+</script>
+
+{% endblock %}

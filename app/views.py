@@ -17,6 +17,7 @@ import json
 login_manager = LoginManager()
 login_manager.setup_app(app)
 
+
 # redirects them to here if they aren't logged in, when they are supposed to be for that page
 # can customize the message
 # right now what it does is: redirects them to the login page and flashes "Please log in to access this page."
@@ -39,7 +40,6 @@ def load_user(user_id):
 
 @app.route("/login", methods = ["GET", "POST"])
 def login():
-  # update the last_login and number of logins everytime that the user logs into the db
   # dont allow user to re-login after they've done so
   form = LoginForm()
   if form.validate_on_submit():
@@ -52,23 +52,22 @@ def login():
     # print "--------------"
     # print unhashed_pwrd
     # print "--------------"
+    # current_user_id = current_user.id
     if user is not None and unhashed_pwrd == True:
       login_user(user)
       user.last_login = datetime.datetime.utcnow()
       user.number_logins += 1
       model.session.commit()
       flash("logged in successfully")
-      return redirect(url_for("patient_home"))
+      if current_user.role == "patient":
+        return redirect(url_for("patient_home"))
+      else:
+        return redirect(url_for("therapist_home"))
+    # add something else in for when user is already logged in
     else:
       flash("Incorrect Password")
-      return redirect("login")
-    # if current_user.id
+      return redirect(url_for("login"))
   return render_template("login.html", title="Sign In", form=form)
-
-@app.route("/test_page")
-@login_required
-def tester():
-  return render_template('page.html')
 
 @app.route("/logout")
 @login_required
@@ -85,38 +84,45 @@ def form():
   #insert role into the sign up form, to differentiate btwn patients/therapists
   form = SignUpForm()
   if form.validate_on_submit():
+    # queries for the email submitted in the signup form
     user = model.session.query(Users).filter(Users.email == form.email.data).first()
-    if user != None:
+    if user is not None:
+      # checking to see if the email is already in the database
       user_email = user.email
       if user_email == form.email.data:
         flash ("email already exists")
         return redirect(url_for("form"))
+    # if it is actually a new user then it pulls wtf forms data and assigns it to variables
     if user == None:
       first_name = form.first_name.data
       last_name = form.last_name.data
-      # role = form.role.data
+      role = form.role.data
+      if role == 'therapist':
+        therapist = None
       email = form.email.data
       password = form.password.data
       pw_hash = bcrypt.generate_password_hash(password)
       number_logins = 0
-      # print "---------------------"
-      # print pw_hash
-      # print "---------------------"
+      therapist_name = form.therapist_name.data
+      if role == 'patient':
+        therapist_query = model.session.query(Users).filter(Users.first_name == therapist_name).first()
+        therapist = therapist_query.id
+        if therapist_query is None:
+          flash("therapist not registered")
       new_user = model.Users(id = None,
                             email=email,
                             password=pw_hash,
                             first_name=first_name,
                             last_name=last_name,
-                            number_logins=number_logins)
+                            role=role,
+                            number_logins=number_logins,
+                            therapist=therapist)
       model.session.add(new_user)
       model.session.commit()
       flash("Account Creation successful, Login to your account")
-      return redirect("home")
+      return redirect(url_for("home"))
   return render_template("signup.html", title="Sign Up Form", form=form)
 
-# @app.route('/login_done')
-# def login_done():
-#   return render_template('login_done.html')
 
 @app.route('/sync_fitbit', methods = ["GET"])
 @login_required
@@ -138,30 +144,80 @@ def fitbit_sync():
   return redirect(url_for("patient_home"))
 
 
+@app.route('/therapist_home', methods = ["POST", "GET"])
+@login_required
+def therapist_home():
+  name = current_user.first_name
+  therapist_id = current_user.id
+  return render_template("therapist_home.html", title = "Welcome",
+                        name = name)
+
+
+@app.route('/patients_list', methods = ["POST", "GET"])
+@login_required
+def patients_list():
+  name = current_user.first_name
+  therapist_id = current_user.id
+  all_patients = model.session.query(Users).filter(Users.therapist == therapist_id).all()
+  patients_list = []
+  for i in all_patients:
+    patients_list.append(i)
+  return render_template("patients_list.html", title = "Patients",
+                        name = name,
+                        patients_list = patients_list)
+
 @app.route('/patient_home', methods = ["POST", "GET"])
 @login_required
 def patient_home():
+  name = current_user.first_name
+  return render_template("patient_home.html", title = "Patient",
+                        name = name)
+
+@app.route('/day_view', methods = ["POST", "GET"])
+@login_required
+def day_view():
+  name = current_user.first_name
+  # get the most recent row inserted into db
   activity = fetch_most_recent_activity()
-  print activity
+  # gets flights of stairs climbed
   floors = activity.floors
-  print floors
+  # gets steps taken
   steps = activity.steps
-  print steps
+  # gets miles walked
   distance = activity.distance
-  print distance
   time_object = activity.date
   string_time = str(time_object)
   # stripped the time to exclude everything but year, month, day
   stripped_time = string_time[:11]
   print stripped_time
-  return render_template("patient_home.html", title = "Patient",
-                          steps=steps,
-                          floors=floors,
-                          distance=distance,
-                          stripped_time=stripped_time)
+  daily_dataset = [
+      {'x': 0, 'y': floors},
+      {'x': 1, 'y': steps},
+      {'x': 2, 'y': distance},
+      ]
+  jsonified_daily_data = json.dumps(daily_dataset)
+  daily_data = jsonified_daily_data.replace('"','')
 
+  return render_template("day_view.html", title = "Day",
+                        floors = floors,
+                        steps = steps,
+                        distance = distance,
+                        stripped_time = stripped_time,
+                        daily_data = daily_data,
+                        name = name)
 
-@app.route('/weekly_steps', methods = ["GET"])
+# def steps_by_day(activity):
+#   steps = util.weekly_steps(activity)
+#   # steps = [5] * 7
+#   # dates = util.dates_for_week(activity)
+#   today = datetime.datetime.today()
+#   days = []
+#   for i in range(7):
+#     days.append( today - datetime.timedelta(days=i))
+#   dates = [int(d.strftime("%s")) for d in days]
+#   return zip(dates, steps)
+
+@app.route('/weekly_data', methods = ["GET"])
 @login_required
 def steps_week_chart():
   current_user_id = current_user.id
@@ -181,6 +237,8 @@ def steps_week_chart():
       { 'x': 5, 'y': steps[5] },
       { 'x': 6, 'y': steps[6] }
       ]
+  # data_step_tuples = steps_by_day(all_user_activity)
+  # data_steps = [ {"x": int(t[0]), "y": t[1]} for t in data_step_tuples]
   jsonified_steps_data = json.dumps(data_steps)
   weekly_steps_data = jsonified_steps_data.replace('"','')
 
@@ -214,25 +272,7 @@ def steps_week_chart():
                         weekly_stairs_data=weekly_stairs_data,
                         weekly_miles_data=weekly_miles_data)
 
-@app.route('/steps', methods = ["GET"])
-@login_required
-def steps_current_day():
-  # today_user_info = model.session.query(Activity).filter(Activity.user_id == "3")
-  # steps_today = today_user_info.steps
-  recent_activity = fetch_most_recent_activity()
-  steps_today = recent_activity.steps
-  return render_template("steps_today.html", steps_today=steps_today)
-
-# user_3_activity = session.query(Activity).filter(Activity.user_id == "3").first()
-# most_recent_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == 3).first()
 
 def fetch_most_recent_activity():
   current_user_id = current_user.id
   return model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
-
-
-# import json and user json.dumps()
-# put in the data in the views function
-# json.dumps(pass in variable name)
-
-# in the JS for the view var my_data{{data|safe}}

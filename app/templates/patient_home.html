@@ -2,42 +2,15 @@
 
 {% block body %}
 
-<form method = "POST" action = "/patient_home" name = "patients">
+<form method = "POST" action = "/patient_home" name = "patient"></form>
 
-<h1> Patient's Info </h1>
+<p> Welcome, {{name}} </p>
 
-<p>{{floors}}</p>
-<p>{{steps}}</p>
-<p>{{distance}}</p>
-<p>{{stripped_time}}</p>
-
-</form>
+<p> Start off with syncing your fitbit </p>
 
 <a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a>
-
-<script src="/static/js/d3.min.js"></script>
-<script src="/static/js/rickshaw.min.js"></script>
-
-<div id="chart"></div>
-
-<script>
-var graph = new Rickshaw.Graph( {
-    element: document.querySelector("#chart"),
-    width: 300,
-    height: 200,
-    series: [{
-        color: 'steelblue',
-        data: [
-            { x: 0, y: 40 },
-            { x: 1, y: 49 },
-            { x: 2, y: 38 },
-            { x: 3, y: 30 },
-            { x: 4, y: 32 } ]
-    }]
-});
-
-graph.render();
-</script>
+<a class="btn" href="{{url_for("steps_week_chart")}}">Week</a>
+<a class = "btn" href="{{url_for("day_view")}}">Today</a>
 
 {% endblock %}
 

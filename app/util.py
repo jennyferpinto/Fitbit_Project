@@ -1,7 +1,6 @@
 import model
 import datetime
 
-
 def insert_activities(dictionary, user_id):
   # inserts user's synced activity data into the database
   all_miles = dictionary['summary']['distances'][0]
@@ -16,10 +15,14 @@ def insert_activities(dictionary, user_id):
   bmr = dictionary['summary']['caloriesBMR']
   activity_cals = dictionary['summary']['activityCalories']
   date = datetime.datetime.utcnow()
-  # date = datetime.date.today()
+  # today = datetime.datetime.today()
+  # days = []
+  # for i in range(7):
+  #   days.append(today - datetime.timedelta(days=i))
+  # date = days[1]
   everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
-                                      steps=total_steps,
+                                     steps=total_steps,
                                       sedentary_min=s_mins,
                                       lightly_active_min=la_mins,
                                       fairly_active_min=fa_mins,
@@ -51,7 +54,6 @@ def weekly_steps(user_activity_query):
   print reversed_steps
   print "*********************************"
   return reversed_steps
-
 
 def weekly_floors(user_activity_query):
   # # current_user_id = model.current_user.id
@@ -91,8 +93,6 @@ def weekly_miles(user_activity_query):
   print "*********************************"
   return reversed_miles
 
-
-
 def dates_for_week(date_query):
   all_dates = date_query
   index = 0
@@ -100,7 +100,7 @@ def dates_for_week(date_query):
   for num in range(0,7):
     dates = all_dates[index].date
     # change date into a string instead of datetime value
-    formatted_time = dates.strftime('%M %d')
+    formatted_time = dates.strftime('%s')
     list_dates.append(formatted_time)
     index += 1
   new_list = reversed(list_dates)
@@ -112,6 +112,3 @@ def dates_for_week(date_query):
   print reversed_dates
   print "*********************************"
   return reversed_dates
-
-def rickshaw_formatter(json):
-  pass

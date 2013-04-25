@@ -24,6 +24,22 @@
 </p>
 
 <p>
+  Role: <br>
+  {{form.role(size = 30)}}<br>
+  {% for error in form.errors.last_name %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p>
+  Therapist Name: <br>
+  {{form.therapist_name(size = 30)}}<br>
+  {% for error in form.errors.therapist_name %}
+  <span style = "color: read;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p>
   Email: <br>
   {{form.email(size = 30)}}<br>
   {% for error in form.errors.email %}

@@ -35,10 +35,12 @@ class Users(Base):
   last_name = Column(String(30))
   last_login = Column(DateTime, nullable = True)
   number_logins = Column(Integer)
-  role = Column(String(20))
+  role = Column(String(20), nullable = True)
+  therapist = Column(Integer, nullable = True)
   user_key = Column(String(255), nullable = True)
   user_secret = Column(String(255), nullable = True)
-  activities = relationship("Activity", backref = "user")
+  activities = relationship("Activity", backref = "users")
+  # goals = relationship("Goal", backref = "user")
 
   def is_authenticated(self):
     return True
@@ -72,6 +74,12 @@ class Activity(Base):
   activity_cals = Column(Integer, nullable = True)
   distance = Column(Float, nullable = True)
   date = Column(DateTime, nullable = True)
+
+# class Goal(Base):
+#   __tablename__ = "goals"
+#   id = Column(Integer, primary_key = True)
+#   user_id = Column(Integer, ForeignKey('users.id'))
+
 
 # if __name__ == "__main__":
 #   main()

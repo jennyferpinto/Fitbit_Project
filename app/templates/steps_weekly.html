@@ -2,67 +2,73 @@
 
 {% block body %}
 
-<form method = "POST" action = "/weekly_steps" name = "patients">
+<form method = "POST" action = "/weekly_data" name = "patients">
 
-<h1> Weekly Step's View </h1>
+<h1> Weekly Data View </h1>
 
+<p> Steps, Floors, Miles </p>
 
 <p> {{weekly_steps_data}} </p>
 
+<p> {{weekly_stairs_data}} </p>
+
+<p> {{weekly_miles_data}} </p>
 
 </form>
 
-<a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a>
-
 <script src="/static/js/d3.min.js"></script>
+<script src="/static/js/d3.layout.min.js"></script>
+
 <script src="/static/js/rickshaw.min.js"></script>
+
 
 <div id="chart">
 <script>
 var graph = new Rickshaw.Graph( {
     element: document.querySelector("#chart"),
-    width: 235,
-    height: 85,
+    width: 500,
+    height: 285,
     renderer: 'bar',
     series: [ {
         data: {{weekly_steps_data}},
         color: 'steelblue'
     } ]
 } );
+// var axes1 = new Rickshaw.Graph.Axis.Time({graph:graph});
 graph.render();
 </script>
 </div>
 
-<div id = "chart">
+<div id = "chart2">
 <script>
-var graph = new Rickshaw.Graph( {
-    element: document.querySelector("#chart"),
-    width: 235,
-    height: 85,
-    renderer: 'bar',
-    series: [ {
-        data: {{weekly_stairs_data}},
-        color: 'steelblue'
-    } ]
-} );
-graph.render();
+// var graph2 = new Rickshaw.Graph( {
+//     element: document.querySelector("#chart2"),
+//     width: 235,
+//     height: 85,
+//     renderer: 'bar',
+//     series: [ {
+//         data: {{weekly_stairs_data}},
+//         color: 'steelblue'
+//     } ]
+// } );
+// graph.render();
 </script>
 </div>
 
 
-<div id = "chart">
+<div id = "chart3">
 <script>
-var graph = new Rickshaw.Graph( {
-    element: document.querySelector("#chart"),
-    width: 235,
-    height: 85,
-    renderer: 'bar',
-    series: [ {
-        data: {{weekly_miles_data}},
-        color: 'steelblue'
-    } ]
-} );
-graph.render();
+// var graph3 = new Rickshaw.Graph( {
+//     element: document.querySelector("#chart3"),
+//     width: 235,
+//     height: 85,
+//     renderer: 'bar',
+//     series: [ {
+//         data: {{weekly_miles_data}},
+//         color: 'steelblue'
+//     } ]
+// } );
+// graph.render();
 </script>
 </div>
 

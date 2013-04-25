@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<h2> Patients </h2>
+
+{% for patients in patients_list %}
+
+{{patients.first_name}}
+
+{% endfor %}
+
+{% endblock %}
