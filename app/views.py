@@ -221,55 +221,57 @@ def day_view():
 @login_required
 def steps_week_chart():
   current_user_id = current_user.id
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
+  # steps = util.weekly_steps(all_user_activity)
+  # # all_user_activity = model.session.query(Activity).order_by(Activity.date.asc()).filter(Activity.user_id == current_user_id).limit(7)
+  # # all_steps = all_user_activity.steps
+  # # cant use dates on a bar graph...
+  # dates = util.dates_for_week(all_user_activity)
+  # # have to put 0-however many bars in the x-axis for the graph to render
+  # data_steps = [
+  #     { 'x': 0, 'y': steps[0] },
+  #     { 'x': 1, 'y': steps[1] },
+  #     { 'x': 2, 'y': steps[2] },
+  #     { 'x': 3, 'y': steps[3] },
+  #     { 'x': 4, 'y': steps[4] },
+  #     { 'x': 5, 'y': steps[5] },
+  #     { 'x': 6, 'y': steps[6] }
+  #     ]
+  # # data_step_tuples = steps_by_day(all_user_activity)
+  # # data_steps = [ {"x": int(t[0]), "y": t[1]} for t in data_step_tuples]
+  # jsonified_steps_data = json.dumps(data_steps)
+  # weekly_steps_data = jsonified_steps_data.replace('"','')
   all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
-  steps = util.weekly_steps(all_user_activity)
-  # all_user_activity = model.session.query(Activity).order_by(Activity.date.asc()).filter(Activity.user_id == current_user_id).limit(7)
-  # all_steps = all_user_activity.steps
-  # cant use dates on a bar graph...
-  dates = util.dates_for_week(all_user_activity)
-  # have to put 0-however many bars in the x-axis for the graph to render
-  data_steps = [
-      { 'x': 0, 'y': steps[0] },
-      { 'x': 1, 'y': steps[1] },
-      { 'x': 2, 'y': steps[2] },
-      { 'x': 3, 'y': steps[3] },
-      { 'x': 4, 'y': steps[4] },
-      { 'x': 5, 'y': steps[5] },
-      { 'x': 6, 'y': steps[6] }
-      ]
-  # data_step_tuples = steps_by_day(all_user_activity)
-  # data_steps = [ {"x": int(t[0]), "y": t[1]} for t in data_step_tuples]
-  jsonified_steps_data = json.dumps(data_steps)
-  weekly_steps_data = jsonified_steps_data.replace('"','')
-
-  stairs = util.weekly_floors(all_user_activity)
-  data_stairs = [
-      { 'x': 0, 'y': stairs[0] },
-      { 'x': 1, 'y': stairs[1] },
-      { 'x': 2, 'y': stairs[2] },
-      { 'x': 3, 'y': stairs[3] },
-      { 'x': 4, 'y': stairs[4] },
-      { 'x': 5, 'y': stairs[5] },
-      { 'x': 6, 'y': stairs[6] }
-      ]
-  jsonified_stairs_data = json.dumps(data_stairs)
-  weekly_stairs_data = jsonified_stairs_data.replace('"','')
-
-  miles = util.weekly_miles(all_user_activity)
-  data_miles = [
-      { 'x': 0, 'y': miles[0] },
-      { 'x': 1, 'y': miles[1] },
-      { 'x': 2, 'y': miles[2] },
-      { 'x': 3, 'y': miles[3] },
-      { 'x': 4, 'y': miles[4] },
-      { 'x': 5, 'y': miles[5] },
-      { 'x': 6, 'y': miles[6] }
-      ]
-  jsonified_miles_data = json.dumps(data_miles)
-  weekly_miles_data = jsonified_miles_data.replace('"','')
+  weekly_steps_data = util.patients_weekly_steps(all_user_activity)
+  # stairs = util.weekly_floors(all_user_activity)
+  # data_stairs = [
+  #     { 'x': 0, 'y': stairs[0] },
+  #     { 'x': 1, 'y': stairs[1] },
+  #     { 'x': 2, 'y': stairs[2] },
+  #     { 'x': 3, 'y': stairs[3] },
+  #     { 'x': 4, 'y': stairs[4] },
+  #     { 'x': 5, 'y': stairs[5] },
+  #     { 'x': 6, 'y': stairs[6] }
+  #     ]
+  # jsonified_stairs_data = json.dumps(data_stairs)
+  # weekly_stairs_data = jsonified_stairs_data.replace('"','')
+  weekly_floors_data = util.patients_weekly_floors(all_user_activity)
+  # miles = util.weekly_miles(all_user_activity)
+  # data_miles = [
+  #     { 'x': 0, 'y': miles[0] },
+  #     { 'x': 1, 'y': miles[1] },
+  #     { 'x': 2, 'y': miles[2] },
+  #     { 'x': 3, 'y': miles[3] },
+  #     { 'x': 4, 'y': miles[4] },
+  #     { 'x': 5, 'y': miles[5] },
+  #     { 'x': 6, 'y': miles[6] }
+  #     ]
+  # jsonified_miles_data = json.dumps(data_miles)
+  # weekly_miles_data = jsonified_miles_data.replace('"','')
+  weekly_miles_data = util.patients_weekly_miles(all_user_activity)
   return render_template("steps_weekly.html",
                         weekly_steps_data=weekly_steps_data,
-                        weekly_stairs_data=weekly_stairs_data,
+                        weekly_floors_data=weekly_floors_data,
                         weekly_miles_data=weekly_miles_data)
 
 

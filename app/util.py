@@ -1,5 +1,6 @@
 import model
 import datetime
+import json
 
 def insert_activities(dictionary, user_id):
   # inserts user's synced activity data into the database
@@ -112,3 +113,56 @@ def dates_for_week(date_query):
   print reversed_dates
   print "*********************************"
   return reversed_dates
+
+
+def patients_weekly_steps(query):
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
+  steps = weekly_steps(query)
+  # dates = dates_for_week(all_user_activity)
+  # have to put 0-however many bars in the x-axis for the graph to render
+  data_steps = [
+      { 'x': 0, 'y': steps[0] },
+      { 'x': 1, 'y': steps[1] },
+      { 'x': 2, 'y': steps[2] },
+      { 'x': 3, 'y': steps[3] },
+      { 'x': 4, 'y': steps[4] },
+      { 'x': 5, 'y': steps[5] },
+      { 'x': 6, 'y': steps[6] }
+      ]
+  # data_step_tuples = steps_by_day(all_user_activity)
+  # data_steps = [ {"x": int(t[0]), "y": t[1]} for t in data_step_tuples]
+  jsonified_steps_data = json.dumps(data_steps)
+  weekly_steps_data = jsonified_steps_data.replace('"','')
+  return weekly_steps_data
+
+def patients_weekly_floors(query):
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
+  floors = weekly_floors(query)
+  data_floors = [
+      { 'x': 0, 'y': floors[0] },
+      { 'x': 1, 'y': floors[1] },
+      { 'x': 2, 'y': floors[2] },
+      { 'x': 3, 'y': floors[3] },
+      { 'x': 4, 'y': floors[4] },
+      { 'x': 5, 'y': floors[5] },
+      { 'x': 6, 'y': floors[6] }
+      ]
+  jsonified_floors_data = json.dumps(data_floors)
+  weekly_floors_data = jsonified_floors_data.replace('"','')
+  return weekly_floors_data
+
+def patients_weekly_miles(query):
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
+  miles = weekly_miles(query)
+  data_miles = [
+      { 'x': 0, 'y': miles[0] },
+      { 'x': 1, 'y': miles[1] },
+      { 'x': 2, 'y': miles[2] },
+      { 'x': 3, 'y': miles[3] },
+      { 'x': 4, 'y': miles[4] },
+      { 'x': 5, 'y': miles[5] },
+      { 'x': 6, 'y': miles[6] }
+      ]
+  jsonified_miles_data = json.dumps(data_miles)
+  weekly_miles_data = jsonified_miles_data.replace('"','')
+  return weekly_miles_data
