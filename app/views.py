@@ -1,5 +1,5 @@
 from app import app
-from flask import Flask, render_template, redirect, request, session
+from flask import Flask, render_template, redirect, request, session, g
 from flask import request, g, flash, url_for
 from flask.ext.login import login_user, logout_user, login_required
 from forms import LoginForm, SignUpForm, GoalsForm
@@ -174,6 +174,7 @@ def therapists_patient_view():
   patient_info = model.session.query(Users).filter(Users.therapist == therapist_id).all()
   # query for patient's id
   patient_id = request.args.get('patient_id', 0)
+  g.patient_id = patient_id
   # activity = patient_info[0].activities
   patient = model.session.query(Users).filter(Users.id == patient_id).first()
   name = patient.first_name
@@ -197,17 +198,20 @@ def therapists_patient_view():
 def set_goals():
   patient_id = request.args.get('patient_id', 0)
   patient = model.session.query(Users).filter(Users.id == patient_id).first()
+  print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  print patient
+  print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   name = patient.first_name
   form = GoalsForm()
   if form.validate_on_submit():
     steps = form.steps.data
     floors = form.floors.data
     distance = form.distance.data
-    new_goals = model.Goal(user_id = patient_id, steps_goal = steps, floors_goal = floors, distance_goal = distance)
+    new_goals = model.Goal(user_id = patient_id, step_goal = steps, floors_goal = floors, distance_goal = distance)
     model.session.add(new_goals)
     model.session.commit()
-    return redirect(url_for("therapists_patient_view"))
-  return render_template("set_goals.html", title = "Set Goals", name = name)
+    flash("goals submitted")
+  return render_template("set_goals.html", title = "Set Goals", name = name, form=form, patient_id=patient_id)
 
 
 @app.route('/patient_home', methods = ["POST", "GET"])
