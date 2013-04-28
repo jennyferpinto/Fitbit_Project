@@ -174,7 +174,7 @@ def therapists_patient_view():
   patient_info = model.session.query(Users).filter(Users.therapist == therapist_id).all()
   # query for patient's id
   patient_id = request.args.get('patient_id', 0)
-  g.patient_id = patient_id
+  session['patient'] = patient_id
   # activity = patient_info[0].activities
   patient = model.session.query(Users).filter(Users.id == patient_id).first()
   name = patient.first_name
@@ -196,7 +196,8 @@ def therapists_patient_view():
 @app.route('/set_goals', methods = ["POST", "GET"])
 @login_required
 def set_goals():
-  patient_id = request.args.get('patient_id', 0)
+  patient_id = session.get('patient')
+  # patient_id = request.args.get('patient_id', 0)
   patient = model.session.query(Users).filter(Users.id == patient_id).first()
   print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   print patient
@@ -207,7 +208,8 @@ def set_goals():
     steps = form.steps.data
     floors = form.floors.data
     distance = form.distance.data
-    new_goals = model.Goal(user_id = patient_id, step_goal = steps, floors_goal = floors, distance_goal = distance)
+    date = form.date.data
+    new_goals = model.Goal(user_id = patient_id, step_goal = steps, floors_goal = floors, distance_goal = distance, date=date)
     model.session.add(new_goals)
     model.session.commit()
     flash("goals submitted")
@@ -237,13 +239,32 @@ def day_view():
   # stripped the time to exclude everything but year, month, day
   stripped_time = string_time[:11]
   daily_data = util.day_view(days_activity)
-  return render_template("day_view.html", title = "Day",
+  return render_template("day_view.html", title = "Day Overview",
                         floors = floors,
                         steps = steps,
                         distance = distance,
                         stripped_time = stripped_time,
                         daily_data = daily_data,
                         name = name)
+
+
+@app.route('/days_goals', methods = ["POST", "GET"])
+@login_required
+def days_goals():
+  current_user_id = current_user.id
+  days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == current_user_id).first()
+  floors = days_goals.floors
+  steps = days_goals.steps
+  distance = days_goals.distance
+  time_object = days_goals.date
+  string_time = str(time_object)
+  stripped_time = string_time[:11]
+  return render_template("days_goals.html", title = "Days Goals",
+                        floors=floors,
+                        steps=steps,
+                        distance=distance,
+                        stripped_time=stripped_time)
+
 
 # def steps_by_day(activity):
 #   steps = util.weekly_steps(activity)
@@ -268,3 +289,8 @@ def steps_week_chart():
                         weekly_steps_data=weekly_steps_data,
                         weekly_floors_data=weekly_floors_data,
                         weekly_miles_data=weekly_miles_data)
+
+
+@app.route('/test_sessions')
+def test_session():
+ return "%r" % session

@@ -31,6 +31,14 @@
   {% endfor %}<br>
 </p>
 
+<p>
+  Date: <br>
+  {{form.date(size = 30)}}<br>
+  {% for error in form.errors.date %}
+  <span style = "color: red;">[{{errors}}]</span>
+  {% endfor %}
+</p>
+
 <p><input type="submit" class="btn" value="Submit"></input></p>
 </form>
 

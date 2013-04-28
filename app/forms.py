@@ -1,4 +1,4 @@
-from flask.ext.wtf import Form, TextField, BooleanField, PasswordField, IntegerField
+from flask.ext.wtf import Form, TextField, BooleanField, PasswordField, IntegerField, FloatField, DateField
 from flask.ext.wtf import Required
 from wtforms import validators as v
 import model
@@ -39,8 +39,10 @@ class GoalsForm(Form):
                       validators=[Required()])
   floors = IntegerField('floors',
                       validators=[Required()])
-  distance = IntegerField('distance',
+  distance = FloatField('distance',
                       validators=[Required()])
+  date = DateField('date',
+                  validators=[Required()])
 
 
 

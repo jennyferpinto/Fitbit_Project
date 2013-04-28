@@ -8,11 +8,11 @@ from flask.ext.wtf import Form, TextField, BooleanField
 from flask.ext.wtf import Required
 
 
-# # leave as None to manually connect and create tables
-# # would then use:
+ # leave as None to manually connect and create tables
+# would then use:
 # engine = create_engine("postgresql:///fitbit_db", echo = True)
-# # then:
-# Base.metadata.create_all(engine)
+#  # then:
+#  Base.metadata.create_all(engine)
 
 # ENGINE = None
 # SESSION = None
@@ -70,6 +70,7 @@ class Goal(Base):
   lightly_active_min_goal = Column(Integer, nullable=True)
   fairly_active_min_goal = Column(Integer, nullable=True)
   very_active_min_goal = Column(Integer, nullable=True)
+  date = Column(DateTime, nullable=True)
 
 class Activity(Base):
   __tablename__ = "activities"

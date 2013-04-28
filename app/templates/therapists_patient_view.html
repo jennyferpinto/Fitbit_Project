@@ -2,23 +2,32 @@
 
 {% block body %}
 
+    <style>
+      a.btn {
+        display: inline-block;
+        color: #FFFFFF;
+        padding: 5px;
+        border: 1px solid #555;
+        border-radius: 5px 5px;
+      }
+    </style>
+
 <p>{{name}}'s Info</p>
 
-<a class="btn" href="{{url_for("set_goals")}}?patient_id={{patient_id}}">Goals</a>
+<a class="btn btn-success" href="{{url_for("set_goals")}}?patient_id={{patient_id}}">Goals</a>
 
 </form>
 
 <script src="/static/js/d3.min.js"></script>
 <script src="/static/js/d3.layout.min.js"></script>
-
 <script src="/static/js/rickshaw.min.js"></script>
 
 <div id="chart1">
 <script>
 var graph = new Rickshaw.Graph( {
     element: document.querySelector("#chart1"),
-    width: 500,
-    height: 285,
+    width: 235,
+    height: 85,
     renderer: 'bar',
     series: [ {
         data: {{weekly_steps_data}},
@@ -49,34 +58,34 @@ graph.render();
 
 <div id = "chart2">
 <script>
-// var graph2 = new Rickshaw.Graph( {
-//     element: document.querySelector("#chart2"),
-//     width: 235,
-//     height: 85,
-//     renderer: 'bar',
-//     series: [ {
-//         data: {{weekly_stairs_data}},
-//         color: 'steelblue'
-//     } ]
-// } );
-// graph.render();
+var graph2 = new Rickshaw.Graph( {
+    element: document.querySelector("#chart2"),
+    width: 235,
+    height: 85,
+    renderer: 'bar',
+    series: [ {
+        data: {{weekly_stairs_data}},
+        color: 'steelblue'
+    } ]
+} );
+graph.render();
 </script>
 </div>
 
 
 <div id = "chart3">
 <script>
-// var graph3 = new Rickshaw.Graph( {
-//     element: document.querySelector("#chart3"),
-//     width: 235,
-//     height: 85,
-//     renderer: 'bar',
-//     series: [ {
-//         data: {{weekly_miles_data}},
-//         color: 'steelblue'
-//     } ]
-// } );
-// graph.render();
+var graph3 = new Rickshaw.Graph( {
+    element: document.querySelector("#chart3"),
+    width: 235,
+    height: 85,
+    renderer: 'bar',
+    series: [ {
+        data: {{weekly_miles_data}},
+        color: 'steelblue'
+    } ]
+} );
+graph.render();
 </script>
 </div>
 
