@@ -1,6 +1,7 @@
 import model
-import datetime
+from datetime import datetime, date, timedelta
 import json
+from model import Users, Activity, Goal
 
 def insert_activities(dictionary, user_id):
   # inserts user's synced activity data into the database
@@ -15,11 +16,11 @@ def insert_activities(dictionary, user_id):
   va_mins = dictionary['summary']['veryActiveMinutes']
   bmr = dictionary['summary']['caloriesBMR']
   activity_cals = dictionary['summary']['activityCalories']
-  date = datetime.datetime.utcnow()
-  # today = datetime.datetime.today()
+  date = datetime.utcnow()
+  # today = datetime.today()
   # days = []
   # for i in range(7):
-  #   days.append(today - datetime.timedelta(days=i))
+  #   days.append(today - timedelta(days=i))
   # date = days[1]
   everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
@@ -115,25 +116,22 @@ def dates_for_week(date_query):
   return reversed_dates
 
 
-def patients_weekly_steps(query):
+def patients_weekly_steps(patient_id):
   # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
-  steps = weekly_steps(query)
   # dates = dates_for_week(all_user_activity)
   # have to put 0-however many bars in the x-axis for the graph to render
-  data_steps = [
-      { 'x': 0, 'y': steps[0] },
-      { 'x': 1, 'y': steps[1] },
-      { 'x': 2, 'y': steps[2] },
-      { 'x': 3, 'y': steps[3] },
-      { 'x': 4, 'y': steps[4] },
-      { 'x': 5, 'y': steps[5] },
-      { 'x': 6, 'y': steps[6] }
-      ]
-  # data_step_tuples = steps_by_day(all_user_activity)
-  # data_steps = [ {"x": int(t[0]), "y": t[1]} for t in data_step_tuples]
-  jsonified_steps_data = json.dumps(data_steps)
-  weekly_steps_data = jsonified_steps_data.replace('"','')
-  return weekly_steps_data
+
+
+  start = date.today() - timedelta(days=7)
+
+  query = model.session.query(Activity).\
+            order_by(Activity.date.asc()).\
+            filter(Activity.user_id == patient_id).\
+            filter(Activity.date > start).\
+            filter(Activity.date <= date.today()).\
+            limit(7)
+
+  return query.all()
 
 def patients_weekly_floors(query):
   # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)

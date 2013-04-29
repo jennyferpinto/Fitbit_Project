@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<form method = "POST" action = "/days_goals" name = "day">
+<p> Floors: {{floors_goal}}</p>
+<p> Steps: {{steps_goal}}</p>
+<p> Distance: {{distance_goal}}</p>
+<p> Date: {{stripped_time}}</p>
+</form>
+
+<script>
+var goals_graph = new Rickshaw.Graph( {
+  element: document.querySelector("#chart"),
+  renderer: 'bar',
+  series: [{
+    data: {{floors_goal}}
+    color: 'steelblue'
+  }, {
+    data: [ {steps}}
+    color: 'lightblue'
+  }]
+});
+
+goals_graph.render();
+
+</script>
+
+
+{% endblock %}

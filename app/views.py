@@ -5,7 +5,7 @@ from flask.ext.login import login_user, logout_user, login_required
 from forms import LoginForm, SignUpForm, GoalsForm
 import model
 from flask.ext.login import LoginManager, current_user
-from model import Users, Activity
+from model import Users, Activity, Goal
 from flaskext.bcrypt import Bcrypt
 import util
 import fitbit
@@ -248,22 +248,33 @@ def day_view():
                         name = name)
 
 
-@app.route('/days_goals', methods = ["POST", "GET"])
-@login_required
-def days_goals():
-  current_user_id = current_user.id
-  days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == current_user_id).first()
-  floors = days_goals.floors
-  steps = days_goals.steps
-  distance = days_goals.distance
-  time_object = days_goals.date
-  string_time = str(time_object)
-  stripped_time = string_time[:11]
-  return render_template("days_goals.html", title = "Days Goals",
-                        floors=floors,
-                        steps=steps,
-                        distance=distance,
-                        stripped_time=stripped_time)
+# @app.route('/days_goals', methods = ["POST", "GET"])
+# @login_required
+# def days_goals():
+#   current_user_id = current_user.id
+#   days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == current_user_id).first()
+#   days_activity = model.session.query(Activity).order_by(Activity.date.desc().filter(Activity.user_id == current_user_id).first()
+#   floors = days_activity.floors
+#   steps = days_activity.steps
+#   distance = days_activity.distance
+#   time_object = days_activity.date
+#   string_time = str(time_object)
+#   floors_goal = days_goals.floors_goal
+#   steps_goal = days_goals.step_goal
+#   distance_goal = days_goals.distance_goal
+#   time_object = days_goals.date
+#   string_time = str(time_object)
+#   stripped_time = string_time[:11]
+
+#   return render_template("days_goals.html", title = "Days Goals",
+#                         floors_goal=floors_goal,
+#                         steps_goal=steps_goal,
+#                         distance_goal=distance_goal,
+#                         stripped_time=stripped_time,
+#                         floors=floors,
+#                         steps=steps,
+#                         distance=distance
+#                         )
 
 
 # def steps_by_day(activity):
@@ -279,10 +290,11 @@ def days_goals():
 
 @app.route('/weekly_data', methods = ["GET"])
 @login_required
-def steps_week_chart():
+def weekly_data_charts():
   current_user_id = current_user.id
-  all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).limit(7)
-  weekly_steps_data = util.patients_weekly_steps(all_user_activity)
+  all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
+
+  weekly_steps_data = util.patients_weekly_steps(current_user.id)
   weekly_floors_data = util.patients_weekly_floors(all_user_activity)
   weekly_miles_data = util.patients_weekly_miles(all_user_activity)
   return render_template("steps_weekly.html",
@@ -291,6 +303,3 @@ def steps_week_chart():
                         weekly_miles_data=weekly_miles_data)
 
 
-@app.route('/test_sessions')
-def test_session():
- return "%r" % session

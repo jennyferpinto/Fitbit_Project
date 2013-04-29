@@ -14,6 +14,10 @@
 
 <p>{{name}}'s Info</p>
 
+<p> Steps {{weekly_steps_data}}</p>
+<p> Floors {{weekly_floors_data}}</p>
+<p> Miles {{weekly_miles_data}}</p>
+
 <a class="btn btn-success" href="{{url_for("set_goals")}}?patient_id={{patient_id}}">Goals</a>
 
 </form>
@@ -41,7 +45,7 @@ graph.render();
 
 <div id="chart2">
 <script>
-var graph = new Rickshaw.Graph( {
+var graph_day = new Rickshaw.Graph( {
     element: document.querySelector("#chart2"),
     width: 235,
     height: 85,
@@ -52,31 +56,31 @@ var graph = new Rickshaw.Graph( {
     } ]
 } );
 
-graph.render();
+graph_day.render();
 </script>
 </div>
 
-<div id = "chart2">
+<div id = "chart3">
 <script>
 var graph2 = new Rickshaw.Graph( {
-    element: document.querySelector("#chart2"),
+    element: document.querySelector("#chart3"),
     width: 235,
     height: 85,
     renderer: 'bar',
     series: [ {
-        data: {{weekly_stairs_data}},
+        data: {{weekly_floors_data}},
         color: 'steelblue'
     } ]
 } );
-graph.render();
+graph2.render();
 </script>
 </div>
 
 
-<div id = "chart3">
+<div id = "chart4">
 <script>
 var graph3 = new Rickshaw.Graph( {
-    element: document.querySelector("#chart3"),
+    element: document.querySelector("#chart4"),
     width: 235,
     height: 85,
     renderer: 'bar',
@@ -85,7 +89,7 @@ var graph3 = new Rickshaw.Graph( {
         color: 'steelblue'
     } ]
 } );
-graph.render();
+graph3.render();
 </script>
 </div>
 

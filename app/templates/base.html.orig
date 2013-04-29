@@ -8,7 +8,6 @@
     <title> Home </title>
     {% endif %}
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="/static/css/rickshaw.css" rel="stylesheet">
 
     <style>
       a.btn {
@@ -44,10 +43,17 @@
                 <ul class="dropdown-menu">
                   <li><a href="/weekly_data">Week</a></li>
                   <li><a href="/patient_home">Day</a></li>
+<<<<<<< Updated upstream
                   <li class="divider">&nbsp;</li>
+                  <li class="nav-header">Nav header</li>
+                  <li><a href="#">Separated link</a></li>
+                  <li><a href="#">One more separated link</a></li>
+=======
+                  <li class="divider"></li>
                   <li class="nav-header">More Info</li>
                   <li><a href="#">Account</a></li>
                   <li><a href="#">Patients</a></li>
+>>>>>>> Stashed changes
                 </ul>
               </li>
             </ul>

@@ -28,19 +28,19 @@ Base.query = session.query_property()
 class Users(Base):
   __tablename__ = "users"
 
-  id = Column(Integer, primary_key = True)
+  id = Column(Integer, primary_key=True)
   email = Column(String(100))
   password = Column(String(255))
   first_name = Column(String(30))
   last_name = Column(String(30))
-  last_login = Column(DateTime, nullable = True)
+  last_login = Column(DateTime, nullable=True)
   number_logins = Column(Integer)
-  role = Column(String(20), nullable = True)
-  therapist = Column(Integer, nullable = True)
-  user_key = Column(String(255), nullable = True)
-  user_secret = Column(String(255), nullable = True)
-  activities = relationship("Activity", backref = "users")
-  goals = relationship("Goal", backref = "users")
+  role = Column(String(20), nullable=True)
+  therapist = Column(Integer, nullable=True)
+  user_key = Column(String(255), nullable=True)
+  user_secret = Column(String(255), nullable=True)
+  activities = relationship("Activity", backref="users")
+  goals = relationship("Goal", backref="users")
 
   def is_authenticated(self):
     return True

@@ -14,85 +14,53 @@
 
 </form>
 
-
-
-<div id="chart">
-</div>
-
-<div id = "chart2">
-  <script>
-    // var graph2 = new Rickshaw.Graph( {
-      //     element: document.querySelector("#chart2"),
-      //     width: 235,
-      //     height: 85,
-      //     renderer: 'bar',
-      //     series: [ {
-        //         data: {{weekly_stairs_data}},
-        //         color: 'steelblue'
-        //     } ]
-      // } );
-    // graph.render();
-  </script>
-</div>
-
-
-<div id = "chart3">
-  <script>
-    // var graph3 = new Rickshaw.Graph( {
-      //     element: document.querySelector("#chart3"),
-      //     width: 235,
-      //     height: 85,
-      //     renderer: 'bar',
-      //     series: [ {
-        //         data: {{weekly_miles_data}},
-        //         color: 'steelblue'
-        //     } ]
-      // } );
-    // graph.render();
-  </script>
-</div>
-
 <script src="/static/js/d3.min.js"></script>
 <script src="/static/js/d3.layout.min.js"></script>
-<script src="/static/js/Rickshaw.Graph.Axis.Time.js"></script>
+<script src="/static/js/rickshaw.min.js"></script>
+
+<!--<script src="/static/js/Rickshaw.Graph.Axis.Time.js"></script>
 <script src="/static/js/Rickshaw.Graph.Axis.X.js"></script>
 <script src="/static/js/Rickshaw.Graph.Axis.Y.js"></script>
-<script src="/static/js/rickshaw.min.js"></script>
-<script>
-  //timing in HTML is hard. jquery makes this easier by giving you a function
-  //where you can run code after the entire page is ready to go
-  jQuery('document').ready(function () {
-    var time = new Rickshaw.Fixtures.Time(),
-        days = time.unit('day'), 
-        graph, xAxis;
+<script src="/static/js/Rickshaw.Fixtures.Time.js"></script>
+<script src="/static/js/Rickshaw.Fixtures.Number.js"></script>-->
 
-
-<div id="chart">
+<div id = "chart1">
 <script>
-var graph = new Rickshaw.Graph( {
-    element: document.querySelector("#chart"),
+
+    var weeklyStepsData = [
+        {% for a in weekly_steps_data %}
+            {
+                x: {{ a.date.strftime('%s') }},
+                y: {{ a.steps }},
+            },
+        {% endfor %}
+    ];
+
+    var graph1 = new Rickshaw.Graph( {
+    element: document.querySelector("#chart1"),
     width: 235,
     height: 85,
     renderer: 'bar',
     series: [ {
-        data: {{weekly_steps_data}},
+        data: weeklyStepsData,
         color: 'steelblue'
       } ]
     } );
 
-    xAxis = new Rickshaw.Graph.Axis.Time({
-      graph: graph,
-      timeUnit: days
+    var xAxis = new Rickshaw.Graph.Axis.Time({
+        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+        graph: graph1
     });
 
     xAxis.render();
-    // var axes1 = new Rickshaw.Graph.Axis.Time({graph:graph});
-    graph.render();
-  });
+    graph1.render();
+
 </script>
+</div>
 
 <div id = "chart2">
 <script>
+
 var graph2 = new Rickshaw.Graph( {
     element: document.querySelector("#chart2"),
     width: 235,
@@ -103,7 +71,7 @@ var graph2 = new Rickshaw.Graph( {
         color: 'steelblue'
     } ]
 } );
-graph.render();
+graph2.render();
 </script>
 </div>
 
@@ -120,7 +88,7 @@ var graph3 = new Rickshaw.Graph( {
         color: 'steelblue'
     } ]
 } );
-graph.render();
+graph3.render();
 </script>
 </div>
 
