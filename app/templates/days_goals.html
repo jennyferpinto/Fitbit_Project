@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_patient.html" %}
 
 {% block body %}
 
@@ -9,22 +9,58 @@
 <p> Date: {{stripped_time}}</p>
 </form>
 
+
+<div id="chart1">
 <script>
+
+var dailyData = [
+        {% for day in days_list %}
+        {% for num in x_list %}
+            {
+                x: {{ num }},
+                y: {{ day }},
+            },
+        {% endfor %}
+        {% endfor %}
+    ];
+
+var daysGoals = [
+        {% for goal in goals_list %}
+        {% for num in x_list %}
+            {
+                x: {{ num }},
+                y: {{ goal }},
+            },
+        {% endfor %}
+        {% endfor %}
+    ];
+
 var goals_graph = new Rickshaw.Graph( {
-  element: document.querySelector("#chart"),
+  element: document.querySelector("#chart1"),
   renderer: 'bar',
   series: [{
-    data: {{floors_goal}}
+    data: daysGoals
     color: 'steelblue'
   }, {
-    data: [ {steps}}
+    data: [{ dailyData
     color: 'lightblue'
   }]
 });
 
-goals_graph.render();
+var xAxis = new Rickshaw.Graph.Axis.Time({
+        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+        graph: goals_graph
+    });
 
+var yAxis = new Rickshaw.Graph.Axis.Y({
+    graph: goals_graph,
+    tickFormat: Rickshaw.Fixtures.Number.formatKMBT
+});
+
+    yAxis.render();
+    xAxis.render();
+    goals_graph.render();
 </script>
-
+</div>
 
 {% endblock %}

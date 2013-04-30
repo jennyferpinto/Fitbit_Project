@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_patient.html" %}
 
 {% block body %}
 
@@ -38,8 +38,8 @@
 
     var graph1 = new Rickshaw.Graph( {
     element: document.querySelector("#chart1"),
-    width: 235,
-    height: 85,
+    width: 600,
+    height: 400,
     renderer: 'bar',
     series: [ {
         data: weeklyStepsData,
@@ -52,6 +52,11 @@
         graph: graph1
     });
 
+    var yAxis = new Rickshaw.Graph.Axis.Y({
+    graph: graph1
+});
+
+    yAxis.render();
     xAxis.render();
     graph1.render();
 
@@ -61,34 +66,76 @@
 <div id = "chart2">
 <script>
 
-var graph2 = new Rickshaw.Graph( {
+    var weeklyFloorsData = [
+        {% for a in weekly_floors_data %}
+            {
+                x: {{ a.date.strftime('%s') }},
+                y: {{ a.floors }},
+            },
+        {% endfor %}
+    ];
+
+    var graph2 = new Rickshaw.Graph( {
     element: document.querySelector("#chart2"),
     width: 235,
     height: 85,
     renderer: 'bar',
     series: [ {
-        data: {{weekly_floors_data}},
+        data: weeklyFloorsData,
         color: 'steelblue'
     } ]
 } );
-graph2.render();
+
+    var xAxis = new Rickshaw.Graph.Axis.Time({
+        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+        graph: graph2
+    });
+
+    var yAxis = new Rickshaw.Graph.Axis.Y({
+    graph: graph2
+});
+
+    yAxis.render();
+    xAxis.render();
+    graph2.render();
 </script>
 </div>
 
-
 <div id = "chart3">
 <script>
-var graph3 = new Rickshaw.Graph( {
+
+    var weeklyMilesData = [
+        {% for a in weekly_miles_data %}
+            {
+                x: {{ a.date.strftime('%s') }},
+                y: {{ a.floors }},
+            },
+        {% endfor %}
+    ];
+
+    var graph3 = new Rickshaw.Graph( {
     element: document.querySelector("#chart3"),
     width: 235,
     height: 85,
     renderer: 'bar',
     series: [ {
-        data: {{weekly_miles_data}},
+        data: weeklyMilesData,
         color: 'steelblue'
     } ]
 } );
-graph3.render();
+
+    var xAxis = new Rickshaw.Graph.Axis.Time({
+        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+        graph: graph3
+    });
+
+    var yAxis = new Rickshaw.Graph.Axis.Y({
+    graph: graph3
+});
+
+    xAxis.render();
+    yAxis.render();
+    graph3.render();
 </script>
 </div>
 

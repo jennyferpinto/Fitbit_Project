@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_patient.html" %}
 
 {% block body %}
 
 <form method = "POST" action = "/day_view" name = "day">
-<h1> {{name}} - Patient Info </h1>
+<h2> {{name}} - Daily Activity Info </h2>
 <p> Floors: {{floors}}</p>
 <p> Steps: {{steps}}</p>
 <p> Distance: {{distance}}</p>
@@ -11,10 +11,9 @@
 <p>{{daily_data}}</p>
 </form>
 
-<p> Welcome, {{name}} </p>
-
-<a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a>
-<a class="btn" href="{{url_for("weekly_data_charts")}}">Week</a>
+<!-- <a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a> -->
+<!-- <a class="btn" href="{{url_for("weekly_data_charts")}}">Week</a> -->
+<a class="btn" href="{{url_for("days_goals")}}">Today's Goals</a>
 
 <script src="/static/js/d3.min.js"></script>
 <script src="/static/js/rickshaw.min.js"></script>
@@ -23,21 +22,38 @@
 <script src="/static/js/Rickshaw.Graph.Axis.Y.js"></script>
 
 <div id="chart"></div>
-
 <script>
+var dailyData = [
+        {% for day in days_list %}
+        {% for num in x_list %}
+            {
+                x: {{ num }},
+                y: {{ day }},
+            },
+        {% endfor %}
+        {% endfor %}
+    ];
+
+// {% for tuple in tuple_data %}
+//               {
+//                 x: {{ tuple[0][0], tuple[1][0], tuple[2][0] }},
+//                 y: {{ tuple[0][1], tuple[1][1], tuple[2][1] }},
+//               };
+// {% endfor %}
+//     ];
+
 var graph = new Rickshaw.Graph( {
     element: document.querySelector("#chart"),
     width: 235,
     height: 85,
     renderer: 'bar',
     series: [ {
-        data: {{daily_data}},
+        data: dailyData,
         color: 'steelblue'
     } ]
 } );
 
 graph.render();
-
 </script>
 
 {% endblock %}

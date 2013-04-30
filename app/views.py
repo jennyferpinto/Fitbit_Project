@@ -167,7 +167,7 @@ def patients_list():
                         patients_list = patients_list)
 
 
-@app.route('/therapists_patient_view', methods = ["POST","GET"])
+@app.route('/therapists_patient_homepage', methods = ["POST","GET"])
 @login_required
 def therapists_patient_view():
   therapist_id = current_user.id
@@ -178,19 +178,42 @@ def therapists_patient_view():
   # activity = patient_info[0].activities
   patient = model.session.query(Users).filter(Users.id == patient_id).first()
   name = patient.first_name
-  all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).limit(7)
-  weekly_steps_data = util.patients_weekly_steps(all_user_activity)
-  weekly_floors_data = util.patients_weekly_floors(all_user_activity)
-  weekly_miles_data = util.patients_weekly_miles(all_user_activity)
-  days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
-  daily_data = util.day_view(days_activity)
-  return render_template("therapists_patient_view.html", title = "Patient Info",
+  # weekly_steps_data = util.patients_weekly_steps(patient_id)
+  # weekly_floors_data = util.patients_weekly_floors(patient_id)
+  # weekly_miles_data = util.patients_weekly_miles(patient_id)
+  # days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
+  # daily_data = util.day_view(days_activity)
+  return render_template("therapists_patient_homepage.html", title = "Patient Info", name=name, patient_id=patient_id)
+
+
+
+@app.route('/therapists_patients_weekly', methods = ["POST", "GET"])
+@login_required
+def patients_weekly_graphs():
+  patient_id = session.get('patient')
+  patient = model.session.query(Users).filter(Users.id == patient_id).first()
+  name = patient.first_name
+  weekly_steps_data = util.patients_weekly_steps(patient_id)
+  weekly_floors_data = util.patients_weekly_floors(patient_id)
+  weekly_miles_data = util.patients_weekly_miles(patient_id)
+  # days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
+  # daily_data = util.day_view(days_activity)
+  return render_template("therapists_patient_view.html", title = "Patient Weekly Info",
                         weekly_steps_data=weekly_steps_data,
                         weekly_floors_data=weekly_floors_data,
                         weekly_miles_data=weekly_miles_data,
-                        daily_data=daily_data,
-                        name=name,
-                        patient_id=patient_id)
+                        name=name)
+
+
+@app.route('/therapists_patients_daily', methods=["POST", "GET"])
+@login_required
+def therapists_patients_daily():
+  patient_id = session.get('patient')
+  patient = model.session.query(Users).filter(Users.id == patient_id).first()
+  name = patient.first_name
+  days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
+  daily_data = util.day_view(days_activity)
+  return render_template("therapists_patients_daily.html", title="Patient Daily Info", daily_data=daily_data, name=name)
 
 
 @app.route('/set_goals', methods = ["POST", "GET"])
@@ -199,9 +222,6 @@ def set_goals():
   patient_id = session.get('patient')
   # patient_id = request.args.get('patient_id', 0)
   patient = model.session.query(Users).filter(Users.id == patient_id).first()
-  print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  print patient
-  print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   name = patient.first_name
   form = GoalsForm()
   if form.validate_on_submit():
@@ -223,81 +243,99 @@ def patient_home():
   return render_template("patient_home.html", title = "Patient",
                         name = name)
 
-
 @app.route('/day_view', methods = ["POST", "GET"])
 @login_required
 def day_view():
   current_user_id = current_user.id
   name = current_user.first_name
-  days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
-  # gets all the floors, steps, distance info to display it as text
-  floors = days_activity.floors
+  days_activity = util.days_activity(current_user_id)
   steps = days_activity.steps
+  floors = days_activity.floors
   distance = days_activity.distance
   time_object = days_activity.date
-  string_time = str(time_object)
-  # stripped the time to exclude everything but year, month, day
+  string_time = str(days_activity.date)
   stripped_time = string_time[:11]
-  daily_data = util.day_view(days_activity)
-  return render_template("day_view.html", title = "Day Overview",
-                        floors = floors,
-                        steps = steps,
-                        distance = distance,
-                        stripped_time = stripped_time,
-                        daily_data = daily_data,
-                        name = name)
+  days_list = [steps, floors, distance]
+  print days_list
+  x_list = [0,1,2]
+  daily_tuples = zip(x_list, days_list)
+  print "+++++++++++++++++++++++++++++++++++++++++++++"
+  print daily_tuples
+  print "+++++++++++++++++++++++++++++++++++++++++++++"
+  # days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
+  # # gets all the floors, steps, distance info to display it as text
+  # floors = days_activity.floors
+  # steps = days_activity.steps
+  # distance = days_activity.distance
+  # time_object = days_activity.date
+  # string_time = str(time_object)
+  # # stripped the time to exclude everything but year, month, day
+  # stripped_time = string_time[:11]
+  # daily_data = util.day_view(days_activity)
+  return render_template("day_view.html", title="Day Overview",
+                        floors=floors,
+                        steps=steps,
+                        distance=distance,
+                        stripped_time=stripped_time,
+                        name=name,
+                        time_object=time_object,
+                        days_list=days_list,
+                        daily_tuples=daily_tuples)
 
 
-# @app.route('/days_goals', methods = ["POST", "GET"])
-# @login_required
-# def days_goals():
-#   current_user_id = current_user.id
-#   days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == current_user_id).first()
-#   days_activity = model.session.query(Activity).order_by(Activity.date.desc().filter(Activity.user_id == current_user_id).first()
-#   floors = days_activity.floors
-#   steps = days_activity.steps
-#   distance = days_activity.distance
-#   time_object = days_activity.date
-#   string_time = str(time_object)
-#   floors_goal = days_goals.floors_goal
-#   steps_goal = days_goals.step_goal
-#   distance_goal = days_goals.distance_goal
-#   time_object = days_goals.date
-#   string_time = str(time_object)
-#   stripped_time = string_time[:11]
+@app.route('/days_goals', methods = ["POST", "GET"])
+@login_required
+def days_goals():
 
-#   return render_template("days_goals.html", title = "Days Goals",
-#                         floors_goal=floors_goal,
-#                         steps_goal=steps_goal,
-#                         distance_goal=distance_goal,
-#                         stripped_time=stripped_time,
-#                         floors=floors,
-#                         steps=steps,
-#                         distance=distance
-#                         )
+  current_user_id = current_user.id
+  name = current_user.first_name
+  days_activity = util.days_activity(current_user_id)
+  steps = days_activity.steps
+  floors = days_activity.floors
+  distance = days_activity.distance
+  time_object = days_activity.date
+  string_time = str(days_activity.date)
+  stripped_time = string_time[:11]
 
+  days_list = [steps, floors, distance]
+  x_list = [0,1,2]
+  daily_activity_tuples = zip(x_list, days_list)
 
-# def steps_by_day(activity):
-#   steps = util.weekly_steps(activity)
-#   # steps = [5] * 7
-#   # dates = util.dates_for_week(activity)
-#   today = datetime.datetime.today()
-#   days = []
-#   for i in range(7):
-#     days.append( today - datetime.timedelta(days=i))
-#   dates = [int(d.strftime("%s")) for d in days]
-#   return zip(dates, steps)
+  daily_goals = util.days_goals(current_user_id)
+  steps_goal = daily_goals.step_goal
+  floors_goal = daily_goals.floors_goal
+  distance_goal = daily_goals.distance_goal
+  time_goal_set = daily_goals.date
+  goal_date = str(time_goal_set)
+  stripped_goal_date = goal_date[:11]
+
+  goals_list = [steps_goal, floors_goal, distance_goal]
+  daily_goals_tuples = zip(x_list, goals_list)
+  print daily_goals_tuples
+
+  return render_template("days_goals.html",
+                        floors=floors,
+                        steps=steps,
+                        distance=distance,
+                        stripped_time=stripped_time,
+                        floors_goal=floors_goal,
+                        steps_goal=steps_goal,
+                        distance_goal=distance_goal,
+                        time_object=time_object,
+                        stripped_goal_data=stripped_goal_date,
+                        daily_goals_tuples=daily_goals_tuples,
+                        daily_activity_tuples=daily_activity_tuples)
 
 @app.route('/weekly_data', methods = ["GET"])
 @login_required
 def weekly_data_charts():
   current_user_id = current_user.id
-  all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
-
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
   weekly_steps_data = util.patients_weekly_steps(current_user.id)
-  weekly_floors_data = util.patients_weekly_floors(all_user_activity)
-  weekly_miles_data = util.patients_weekly_miles(all_user_activity)
+  weekly_floors_data = util.patients_weekly_floors(current_user.id)
+  weekly_miles_data = util.patients_weekly_miles(current_user.id)
   return render_template("steps_weekly.html",
+                        title="Week Overview",
                         weekly_steps_data=weekly_steps_data,
                         weekly_floors_data=weekly_floors_data,
                         weekly_miles_data=weekly_miles_data)

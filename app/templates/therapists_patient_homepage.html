@@ -1,0 +1,28 @@
+{% extends "base_therapist.html" %}
+
+{% block body %}
+
+    <style>
+      a.btn {
+        display: inline-block;
+        color: #FFFFFF;
+        padding: 5px;
+        border: 1px solid #555;
+        border-radius: 5px 5px;
+      }
+    </style>
+
+<form method = "POST" action = "/therapists_patient_view" name = "Patients Home Page">
+
+<h1>{{name}}'s Info</h1>
+
+<h3>Insert patient's info here</h3>
+
+
+<a class="btn btn-success" href="{{url_for("set_goals")}}?patient_id={{patient_id}}">Set Goals</a>
+
+<a class="btn" href="{{url_for("patients_weekly_graphs")}}?patient_id={{patient_id}}">Weekly Graphs</a>
+
+<a class="btn" href="{{url_for("therapists_patients_daily")}}?patient_id={{patient_id}}">Daily Graph</a>
+
+{% endblock %}

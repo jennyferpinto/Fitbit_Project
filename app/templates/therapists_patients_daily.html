@@ -1,0 +1,43 @@
+{% extends "base_therapist.html" %}
+
+{% block body %}
+
+<form method = "POST" action = "/therapists_patients_daily" name = "Patients Weekly View">
+
+  <h1> Daily Data View for {{name}} </h1>
+
+</form>
+
+<script src="/static/js/d3.min.js"></script>
+<script src="/static/js/d3.layout.min.js"></script>
+<script src="/static/js/rickshaw.min.js"></script>
+
+<div id="day_chart">
+<script>
+var graph_day = new Rickshaw.Graph( {
+    element: document.querySelector("#day_chart"),
+    width: 235,
+    height: 85,
+    renderer: 'bar',
+    series: [ {
+        data: {{daily_data}},
+        color: 'steelblue'
+    } ]
+} );
+
+var xAxis = new Rickshaw.Graph.Axis.Time({
+    timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+    graph: graph_day
+});
+
+var yAxis = new Rickshaw.Graph.Axis.Y({
+    graph: graph_day
+});
+
+yAxis.render();
+xAxis.render();
+graph_day.render();
+</script>
+</div>
+
+{% endblock %}
