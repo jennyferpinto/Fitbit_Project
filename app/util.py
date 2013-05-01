@@ -21,7 +21,7 @@ def insert_activities(dictionary, user_id):
   # days = []
   # for i in range(7):
   #   days.append(today - timedelta(days=i))
-  # date = days[1]
+  # date = days[0]
   everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
                                      steps=total_steps,
@@ -72,22 +72,22 @@ def patients_weekly_miles(patient_id):
 
   return query.all()
 
-def day_view(query):
-  days_activity = query
-  floors = days_activity.floors
-  steps = days_activity.steps
-  distance = days_activity.distance
-  time_object = days_activity.date
-  string_time = str(time_object)
-  daily_dataset = [
-      {'x': 0, 'y': floors},
-      {'x': 1, 'y': steps},
-      {'x': 2, 'y': distance},
-      ]
-  jsonified_daily_data = json.dumps(daily_dataset)
-  daily_data = jsonified_daily_data.replace('"','')
-  return daily_data
-
+def day_view(patient_id):
+  # days_activity = query
+  # floors = days_activity.floors
+  # steps = days_activity.steps
+  # distance = days_activity.distance
+  # time_object = days_activity.date
+  # string_time = str(time_object)
+  # daily_dataset = [
+  #     {'x': 0, 'y': floors},
+  #     {'x': 1, 'y': steps},
+  #     {'x': 2, 'y': distance},
+  #     ]
+  # jsonified_daily_data = json.dumps(daily_dataset)
+  # daily_data = jsonified_daily_data.replace('"','')
+  patients_day = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
+  return patients_day
 
 def days_goals(patient_id):
   days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == patient_id).first()

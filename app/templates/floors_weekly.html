@@ -2,80 +2,65 @@
 
 {% block body %}
 
-<form method = "POST" action = "/weekly_floors" name = "patients">
+<form method = "POST" action = "/weekly_floors" name = "patients"></form>
 
-<h1> Floors Climbed This Week </h1>
-
-<!-- <p> Steps {{weekly_steps_data}} </p> -->
-
-<!-- <p> Floors {{weekly_floors_data}} </p> -->
-
-<!-- <p> Miles {{weekly_miles_data}} </p> -->
+<h2> Floors Climbed This Week </h2>
 
 <a class="btn" href="{{url_for("weekly_steps_chart")}}">Steps</a>
 <a class="btn" href="{{url_for("weekly_miles_chart")}}">Miles</a>
 
+<div class="btn-group">
+<button class="btn" href="{{url_for("weekly_steps_chart")}}">Steps</button>
+<button class="btn" href="{{url_for("weekly_miles_chart")}}">Miles</button>
+</div>
 
-</form>
+<style>
+#chart_container {
+    position: relative;  /* needed for position absolute to work later */
+    padding-bottom: 10px;
+}
 
-<script src="/static/js/d3.min.js"></script>
-<script src="/static/js/d3.layout.min.js"></script>
-<script src="/static/js/rickshaw.min.js"></script>
+#chart2 {
+    position: relative;
+    left: 40px;
+    top: 50px;
+}
 
-<!--<script src="/static/js/Rickshaw.Graph.Axis.Time.js"></script>
-<script src="/static/js/Rickshaw.Graph.Axis.X.js"></script>
-<script src="/static/js/Rickshaw.Graph.Axis.Y.js"></script>
-<script src="/static/js/Rickshaw.Fixtures.Time.js"></script>
-<script src="/static/js/Rickshaw.Fixtures.Number.js"></script>-->
+#y_axis {
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    width: 40px;
+}
 
-<!-- <div id = "chart1">
+#x_axis {
+    position: relative;
+    left: 40px;
+/*    height: 40px;*/
+    bottom: -50px;
+}
+</style>
+
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "chart2"></div>
+    <div id = "x_axis"></div>
+</div>
+
 <script>
 
-    var weeklyStepsData = [
-        {% for a in weekly_steps_data %}
-            {
-                x: {{ a.date.strftime('%s') }},
-                y: {{ a.steps }},
-            },
-        {% endfor %}
-    ];
-
-    var graph1 = new Rickshaw.Graph( {
-    element: document.querySelector("#chart1"),
-    width: 600,
-    height: 400,
-    renderer: 'bar',
-    series: [ {
-        data: weeklyStepsData,
-        color: 'steelblue'
-      } ]
-    } );
-
-    var xAxis = new Rickshaw.Graph.Axis.Time({
-        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
-        graph: graph1
-    });
-
-    var yAxis = new Rickshaw.Graph.Axis.Y({
-    graph: graph1
-});
-
-    yAxis.render();
-    xAxis.render();
-    graph1.render();
-
-</script>
-</div> -->
-
-<div id = "chart2">
-<script>
+    // var weeklyFloorsData = [
+    //     {% for a in weekly_floors_data %}
+    //         {
+    //             x: {{ a.date.strftime('%s') }},
+    //             y: {{ a.floors }},
+    //         },
+    //     {% endfor %}
+    // ];
 
     var weeklyFloorsData = [
-        {% for a in weekly_floors_data %}
-            {
-                x: {{ a.date.strftime('%s') }},
-                y: {{ a.floors }},
-            },
+        {% for t in floor_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
     ];
 
@@ -90,57 +75,45 @@
     } ]
 } );
 
-    var xAxis = new Rickshaw.Graph.Axis.Time({
-        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
-        graph: graph2
-    });
+    var format = function(n) {
+
+        var map = {
+        {% for t in date_tuples %}
+            {{t[0]|safe}}: "{{t[1]|safe}}",
+        {% endfor %}
+        }
+        return map[n];
+    }
 
     var yAxis = new Rickshaw.Graph.Axis.Y({
-    graph: graph2
-});
+                graph: graph2,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.getElementById('y_axis')
+    });
 
-    yAxis.render();
-    xAxis.render();
+    var x_ticks = new Rickshaw.Graph.Axis.X( {
+    graph: graph2,
+    orientation: 'bottom',
+    element: document.getElementById('x_axis'),
+    pixelsPerTick: 200,
+    tickFormat: format
+} );
+
+
+//     var xAxis = new Rickshaw.Graph.Axis.Time({
+//         timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+//         graph: graph2
+//     });
+
+//     var yAxis = new Rickshaw.Graph.Axis.Y({
+//     graph: graph2
+// });
+
+    // yAxis.render();
+    // xAxis.render();
     graph2.render();
 </script>
 </div>
-
-<!-- <div id = "chart3">
-<script>
-
-    var weeklyMilesData = [
-        {% for a in weekly_miles_data %}
-            {
-                x: {{ a.date.strftime('%s') }},
-                y: {{ a.floors }},
-            },
-        {% endfor %}
-    ];
-
-    var graph3 = new Rickshaw.Graph( {
-    element: document.querySelector("#chart3"),
-    width: 235,
-    height: 85,
-    renderer: 'bar',
-    series: [ {
-        data: weeklyMilesData,
-        color: 'steelblue'
-    } ]
-} );
-
-    var xAxis = new Rickshaw.Graph.Axis.Time({
-        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
-        graph: graph3
-    });
-
-    var yAxis = new Rickshaw.Graph.Axis.Y({
-    graph: graph3
-});
-
-    xAxis.render();
-    yAxis.render();
-    graph3.render();
-</script>
-</div> -->
 
 {% endblock %}

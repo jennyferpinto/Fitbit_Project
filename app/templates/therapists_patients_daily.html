@@ -12,31 +12,69 @@
 <script src="/static/js/d3.layout.min.js"></script>
 <script src="/static/js/rickshaw.min.js"></script>
 
-<div id="day_chart">
+<style>
+#chart_container {
+    position: relative;  /* needed for position absolute to work later */
+    padding-bottom: 10px;
+}
+
+#day_graph {
+    position: relative;
+    left: 40px;
+}
+
+#y_axis {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+}
+</style>
+
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "day_graph"></div>
+</div>
+
 <script>
-var graph_day = new Rickshaw.Graph( {
-    element: document.querySelector("#day_chart"),
+
+var dailyData = [
+        {% for t in daily_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
+        {% endfor %}
+    ];
+
+var day_graph = new Rickshaw.Graph( {
+    element: document.querySelector("#day_graph"),
     width: 235,
     height: 85,
     renderer: 'bar',
     series: [ {
-        data: {{daily_data}},
+        data: dailyData,
         color: 'steelblue'
     } ]
 } );
 
-var xAxis = new Rickshaw.Graph.Axis.Time({
-    timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
-    graph: graph_day
-});
+// var xAxis = new Rickshaw.Graph.Axis.Time({
+//     timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+//     graph: graph_day
+// });
+
+// var yAxis = new Rickshaw.Graph.Axis.Y({
+//     graph: graph_day
+// });
 
 var yAxis = new Rickshaw.Graph.Axis.Y({
-    graph: graph_day
-});
+        graph: day_graph,
+        orientation: 'left',
+        tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+        element: document.getElementById('y_axis')
+    });
 
-yAxis.render();
-xAxis.render();
-graph_day.render();
+
+// yAxis.render();
+// xAxis.render();
+day_graph.render();
 </script>
 </div>
 

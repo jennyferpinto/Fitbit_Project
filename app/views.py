@@ -142,8 +142,6 @@ def fitbit_sync():
   model.session.commit()
   flash("Fitbit is synced!")
   return redirect(url_for("patient_home"))
-
-
 @app.route('/therapist_home', methods = ["POST", "GET"])
 @login_required
 def therapist_home():
@@ -196,13 +194,30 @@ def patients_weekly_graphs():
   weekly_steps_data = util.patients_weekly_steps(patient_id)
   weekly_floors_data = util.patients_weekly_floors(patient_id)
   weekly_miles_data = util.patients_weekly_miles(patient_id)
+
+  x_axis = [0,1,2,3,4,5,6]
+
+  steps_list = []
+  for element in weekly_steps_data:
+    steps_list.append(element.steps)
+  x_axis = [0,1,2,3,4,5,6]
+  step_tuples = zip(x_axis, steps_list)
+
+  dates_list = []
+  for element in weekly_steps_data:
+    dates_list.append(element.date.day)
+  date_tuples = zip(x_axis, dates_list)
+
   # days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
   # daily_data = util.day_view(days_activity)
   return render_template("therapists_patient_view.html", title = "Patient Weekly Info",
                         weekly_steps_data=weekly_steps_data,
                         weekly_floors_data=weekly_floors_data,
                         weekly_miles_data=weekly_miles_data,
-                        name=name)
+                        name=name,
+                        x_axis=x_axis,
+                        date_tuples=date_tuples,
+                        step_tuples=step_tuples)
 
 
 @app.route('/therapists_patients_daily', methods=["POST", "GET"])
@@ -211,9 +226,27 @@ def therapists_patients_daily():
   patient_id = session.get('patient')
   patient = model.session.query(Users).filter(Users.id == patient_id).first()
   name = patient.first_name
-  days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
-  daily_data = util.day_view(days_activity)
-  return render_template("therapists_patients_daily.html", title="Patient Daily Info", daily_data=daily_data, name=name)
+  # days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
+  # daily_data = util.day_view(days_activity)
+  daily_data = util.day_view(patient_id)
+  steps = daily_data.steps
+  floors = daily_data.floors
+  distance = daily_data.distance
+  time_object = daily_data.date
+  string_time = str(daily_data.date)
+  stripped_time = string_time[:11]
+  days_list = [steps, floors, distance]
+  x_list = [0,1,2]
+  daily_tuples = zip(x_list, days_list)
+  return render_template("therapists_patients_daily.html",
+                          title="Patient Daily Info",
+                          daily_data=daily_data,
+                          name=name,
+                          steps=steps,
+                          floors=floors,
+                          distance=distance,
+                          days_list=days_list,
+                          daily_tuples=daily_tuples)
 
 
 @app.route('/set_goals', methods = ["POST", "GET"])
@@ -307,11 +340,14 @@ def days_goals():
   distance_goal = daily_goals.distance_goal
   time_goal_set = daily_goals.date
   goal_date = str(time_goal_set)
-  stripped_goal_date = goal_date[:11]
+  stripped_goal_date = goal_date[:10]
+  print "____________________________________________________________________"
+  print stripped_goal_date
+  print "____________________________________________________________________"
+
 
   goals_list = [steps_goal, floors_goal, distance_goal]
   daily_goals_tuples = zip(x_list, goals_list)
-  print daily_goals_tuples
 
   return render_template("days_goals.html",
                         floors=floors,
@@ -326,7 +362,7 @@ def days_goals():
                         daily_goals_tuples=daily_goals_tuples,
                         daily_activity_tuples=daily_activity_tuples)
 
-@app.route('/weekly_steps', methods = ["GET"])
+@app.route('/weekly_steps', methods = ["GET","POST"])
 @login_required
 def weekly_steps_chart():
   current_user_id = current_user.id
@@ -341,7 +377,7 @@ def weekly_steps_chart():
 
   dates_list = []
   for element in weekly_steps_data:
-    dates_list.append(element.date.day)
+    dates_list.append(element.date.strftime('%m'+'.'+'%d'))
   date_tuples = zip(x_axis, dates_list)
   # weekly_floors_data = util.patients_weekly_floors(current_user.id)
   # weekly_miles_data = util.patients_weekly_miles(current_user.id)
@@ -351,7 +387,7 @@ def weekly_steps_chart():
                         step_tuples=step_tuples,
                         date_tuples=date_tuples)
 
-@app.route('/weekly_floors', methods = ["GET"])
+@app.route('/weekly_floors', methods = ["GET","POST"])
 @login_required
 def weekly_floors_chart():
   current_user_id = current_user.id
@@ -367,7 +403,7 @@ def weekly_floors_chart():
 
   dates_list = []
   for element in weekly_floors_data:
-    dates_list.append(element.date.day)
+    dates_list.append(element.date.strftime('%m'+'.'+'%d'))
   date_tuples = zip(x_axis, dates_list)
   return render_template("floors_weekly.html",
                         title="Floors",
@@ -375,7 +411,7 @@ def weekly_floors_chart():
                         floor_tuples=floor_tuples,
                         date_tuples=date_tuples)
 
-@app.route('/weekly_miles', methods = ["GET"])
+@app.route('/weekly_miles', methods = ["GET","POST"])
 @login_required
 def weekly_miles_chart():
   current_user_id = current_user.id
@@ -385,18 +421,18 @@ def weekly_miles_chart():
   weekly_miles_data = util.patients_weekly_miles(current_user.id)
   miles_list = []
   for element in weekly_miles_data:
-    miles_list.append(element.floors)
+    miles_list.append(element.distance)
   x_axis = [0,1,2,3,4,5,6]
-  floor_tuples = zip(x_axis, miles_list)
+  mile_tuples = zip(x_axis, miles_list)
 
   dates_list = []
   for element in weekly_miles_data:
-    dates_list.append(element.date.day)
+    dates_list.append(element.date.strftime('%m'+'.'+'%d'))
   date_tuples = zip(x_axis, dates_list)
   return render_template("miles_weekly.html",
                         title="Miles",
                         weekly_miles_data=weekly_miles_data,
-                        floor_tuples=floor_tuples,
+                        mile_tuples=mile_tuples,
                         date_tuples=date_tuples)
 
 

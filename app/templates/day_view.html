@@ -4,7 +4,7 @@
 
 <form method = "POST" action = "/day_view" name = "day">
 <h2> {{name}} - Daily Activity Info </h2>
-<p> Floors: {{floors}}</p>
+<p> Floors: {{floors}} % up or down from yesterday </p>
 <p> Steps: {{steps}}</p>
 <p> Distance: {{distance}}</p>
 <p> Date: {{stripped_time}}</p>
@@ -19,12 +19,34 @@
 <script src="/static/js/Rickshaw.Graph.Axis.X.js"></script>
 <script src="/static/js/Rickshaw.Graph.Axis.Y.js"></script>
 
-<div id="chart"></div>
-<script>
+<style>
+#chart_container {
+    position: relative;  /* needed for position absolute to work later */
+    padding-bottom: 10px;
+}
 
+#day_graph {
+    position: relative;
+    left: 40px;
+}
+
+#y_axis {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+}
+</style>
+
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "day_graph"></div>
+</div>
+
+<script>
 var dailyData = [
         {% for t in daily_tuples %}
-          { "x": {{t[0]|safe}}, "y": {{t[1]|safe}} },
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
     ];
 
@@ -36,8 +58,8 @@ var dailyData = [
 // {% endfor %}
 //     ];
 
-var graph = new Rickshaw.Graph( {
-    element: document.querySelector("#chart"),
+var day_graph = new Rickshaw.Graph( {
+    element: document.querySelector("#day_graph"),
     width: 235,
     height: 85,
     renderer: 'bar',
@@ -47,7 +69,14 @@ var graph = new Rickshaw.Graph( {
     } ]
 } );
 
-graph.render();
+var yAxis = new Rickshaw.Graph.Axis.Y({
+        graph: day_graph,
+        orientation: 'left',
+        tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+        element: document.getElementById('y_axis')
+    });
+
+day_graph.render();
 </script>
 
 {% endblock %}

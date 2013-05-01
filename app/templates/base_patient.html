@@ -9,7 +9,9 @@
     {% endif %}
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="/static/css/rickshaw.css" rel="stylesheet">
-
+    <script src="/static/js/d3.min.js"></script>
+    <script src="/static/js/d3.layout.min.js"></script>
+    <script src="/static/js/rickshaw.min.js"></script>
     <style>
       a.btn {
         display: inline-block;
@@ -46,12 +48,14 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Info <b class="caret">&nbsp;</b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="/weekly_data">Week</a></li>
-                  <li><a href="/day_view">Day</a></li>
-                  <li class="divider">&nbsp;</li>
-                  <li class="nav-header">More Info</li>
                   <li><a href="/patient_home">Home</a></li>
                   <li><a href="/logout">Logout</a></li>
+                  <li class="divider">&nbsp;</li>
+                  <li class="nav-header">User Activity</li>
+                  <li><a href="/day_view">Day's Activity</a></li>
+                  <li><a href="/weekly_miles">Miles</a></li>
+                  <li><a href="/weekly_steps">Steps</a></li>
+                  <li><a href="/weekly_floors">Floors</a></li>
                 </ul>
               </li>
             </ul>
@@ -82,14 +86,14 @@
         {% block body %} {% endblock %}
       </div>
       </div>
-
+<!--
       <div class="row">
         <div class="span4">
           <h2>Heading</h2>
           <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
           <p><a class="btn" href="#">View details &raquo;</a></p>
         </div>
-      </div>
+      </div> -->
 
       <hr>
 

@@ -2,66 +2,143 @@
 
 {% block body %}
 
-<form method = "POST" action = "/days_goals" name = "day">
-<p> Floors: {{floors_goal}}</p>
-<p> Steps: {{steps_goal}}</p>
-<p> Distance: {{distance_goal}}</p>
-<p> Date: {{stripped_time}}</p>
-</form>
+<form method = "POST" action = "/days_goals" name = "day"></form>
 
+<style>
+#chart_container {
+    position: relative;  /* needed for position absolute to work later */
+    padding-bottom: 10px;
+}
 
+#goals_graph {
+    position: relative;
+    left: 40px;
+}
 
-<div id="chart1">
-<script>
+#y_axis {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+}
 
+/*#x_axis {
+    position: relative;
+    left: 40px;
+    height: 40px;
+    top: 0;
+    bottom: 0;
+}*/
+</style>
+
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "goals_graph"></div>
+</div>
+
+<div id = "stats_container">
+
+<div id = "floors_info">
+
+<p id= "floors"> <img class="stairs" src="/static/images/stairs.png" height= "50" width= "50"> Floors: {{floors}}/{{floors_goal}}</p>
+
+</div>
+
+<div id = "steps_info"
+<p id = "steps"> <img class="footprints" src="/static/images/footprints.png" height= "50" width= "50"> Steps: {{steps}}/{{steps_goal}}</p>
+</div>
+
+<div id = "distance_info">
+<p id = "distance"> <img class="footprints" src="/static/images/map_pin.png" height= "50" width= "50"> Distance: {{distance}}/{{distance_goal}}</p>
+</div>
+
+<!-- <div id = "date_info">
+<p> Date: {{goal_date}}</p>
+</div> -->
+
+</div>
+
+// <script>
 var dailyData = [
-        {% for day in days_list %}
-        {% for num in x_list %}
-            {
-                x: {{ num }},
-                y: {{ day }},
-            },
-        {% endfor %}
+        {% for t in daily_activity_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
     ];
 
-var daysGoals = [
-        {% for goal in goals_list %}
-        {% for num in x_list %}
-            {
-                x: {{ num }},
-                y: {{ goal }},
-            },
-        {% endfor %}
+var dailyGoals = [
+        {% for t in daily_goals_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
     ];
 
 var goals_graph = new Rickshaw.Graph( {
-  element: document.querySelector("#chart1"),
+  element: document.querySelector("#goals_graph"),
   renderer: 'bar',
-  series: [{
-    data: daysGoals
-    color: 'steelblue'
-  }, {
-    data: [{ dailyData
-    color: 'lightblue'
-  }]
-});
+    series: [
+        {
+            data: dailyData,
+            color: 'steelblue'
+        }, {
+            data: dailyGoals,
+            color: 'lightblue'
+    } ]
+} );
 
-var xAxis = new Rickshaw.Graph.Axis.Time({
-        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
-        graph: goals_graph
+// var xAxis = new Rickshaw.Graph.Axis.Time({
+//         timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+//         graph: goals_graph
+//     });
+
+// var yAxis = new Rickshaw.Graph.Axis.Y({
+//     graph: goals_graph,
+//     tickFormat: Rickshaw.Fixtures.Number.formatKMBT
+// });
+
+    var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: goals_graph,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.getElementById('y_axis')
     });
 
-var yAxis = new Rickshaw.Graph.Axis.Y({
-    graph: goals_graph,
-    tickFormat: Rickshaw.Fixtures.Number.formatKMBT
-});
+    // yAxis.render();
+    // xAxis.render();
+    goals_graph.render();
+// </script>
 
-    yAxis.render();
-    xAxis.render();
+
+<script>
+var dailyStepsData = [
+          { x: {{0}}, y: {{steps}} },
+    ];
+
+var dailyStepsGoals = [
+          { x: {{0}}, y: {{steps_goal}} },
+    ];
+
+var goals_graph = new Rickshaw.Graph( {
+  element: document.querySelector("#goals_graph"),
+  renderer: 'bar',
+    series: [
+        {
+            data: dailyStepsData,
+            color: 'steelblue'
+        }, {
+            data: dailyStepsGoals,
+            color: 'lightblue'
+    } ]
+} );
+
+    var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: goals_graph,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.getElementById('y_axis')
+    });
+
     goals_graph.render();
 </script>
+
 </div>
 
 {% endblock %}
