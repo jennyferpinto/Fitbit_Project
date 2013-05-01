@@ -332,11 +332,24 @@ def weekly_steps_chart():
   current_user_id = current_user.id
   # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
   weekly_steps_data = util.patients_weekly_steps(current_user.id)
+
+  steps_list = []
+  for element in weekly_steps_data:
+    steps_list.append(element.steps)
+  x_axis = [0,1,2,3,4,5,6]
+  step_tuples = zip(x_axis, steps_list)
+
+  dates_list = []
+  for element in weekly_steps_data:
+    dates_list.append(element.date.day)
+  date_tuples = zip(x_axis, dates_list)
   # weekly_floors_data = util.patients_weekly_floors(current_user.id)
   # weekly_miles_data = util.patients_weekly_miles(current_user.id)
   return render_template("steps_weekly.html",
                         title="Steps",
-                        weekly_steps_data=weekly_steps_data)
+                        weekly_steps_data=weekly_steps_data,
+                        step_tuples=step_tuples,
+                        date_tuples=date_tuples)
 
 @app.route('/weekly_floors', methods = ["GET"])
 @login_required
@@ -346,9 +359,21 @@ def weekly_floors_chart():
   # weekly_steps_data = util.patients_weekly_steps(current_user.id)
   weekly_floors_data = util.patients_weekly_floors(current_user.id)
   # weekly_miles_data = util.patients_weekly_miles(current_user.id)
+  floors_list = []
+  for element in weekly_floors_data:
+    floors_list.append(element.floors)
+  x_axis = [0,1,2,3,4,5,6]
+  floor_tuples = zip(x_axis, floors_list)
+
+  dates_list = []
+  for element in weekly_floors_data:
+    dates_list.append(element.date.day)
+  date_tuples = zip(x_axis, dates_list)
   return render_template("floors_weekly.html",
                         title="Floors",
-                        weekly_floors_data=weekly_floors_data)
+                        weekly_floors_data=weekly_floors_data,
+                        floor_tuples=floor_tuples,
+                        date_tuples=date_tuples)
 
 @app.route('/weekly_miles', methods = ["GET"])
 @login_required
@@ -358,8 +383,20 @@ def weekly_miles_chart():
   # weekly_steps_data = util.patients_weekly_steps(current_user.id)
   # weekly_floors_data = util.patients_weekly_floors(current_user.id)
   weekly_miles_data = util.patients_weekly_miles(current_user.id)
+  miles_list = []
+  for element in weekly_miles_data:
+    miles_list.append(element.floors)
+  x_axis = [0,1,2,3,4,5,6]
+  floor_tuples = zip(x_axis, miles_list)
+
+  dates_list = []
+  for element in weekly_miles_data:
+    dates_list.append(element.date.day)
+  date_tuples = zip(x_axis, dates_list)
   return render_template("miles_weekly.html",
                         title="Miles",
-                        weekly_miles_data=weekly_miles_data)
+                        weekly_miles_data=weekly_miles_data,
+                        floor_tuples=floor_tuples,
+                        date_tuples=date_tuples)
 
 

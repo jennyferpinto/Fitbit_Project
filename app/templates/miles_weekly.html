@@ -106,12 +106,18 @@
 <div id = "chart3">
 <script>
 
+    // var weeklyMilesData = [
+    //     {% for a in weekly_miles_data %}
+    //         {
+    //             x: {{ a.date.strftime('%s') }},
+    //             y: {{ a.floors }},
+    //         },
+    //     {% endfor %}
+    // ];
+
     var weeklyMilesData = [
-        {% for a in weekly_miles_data %}
-            {
-                x: {{ a.date.strftime('%s') }},
-                y: {{ a.floors }},
-            },
+        {% for t in step_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
     ];
 
@@ -126,17 +132,42 @@
     } ]
 } );
 
-    var xAxis = new Rickshaw.Graph.Axis.Time({
-        timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
-        graph: graph3
-    });
+    var format = function(n) {
+
+        var map = {
+        {% for t in date_tuples %}
+            {{t[0]|safe}}: {{t[1]|safe}},
+        {% endfor %}
+        }
+        return map[n];
+    }
+
+//     var xAxis = new Rickshaw.Graph.Axis.Time({
+//         timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
+//         graph: graph3
+//     });
+
+//     var yAxis = new Rickshaw.Graph.Axis.Y({
+//     graph: graph3
+// });
 
     var yAxis = new Rickshaw.Graph.Axis.Y({
-    graph: graph3
-});
+                graph: graph3,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.getElementById('y_axis')
+    });
 
-    xAxis.render();
-    yAxis.render();
+    var x_ticks = new Rickshaw.Graph.Axis.X( {
+    graph: graph3,
+    orientation: 'top',
+    element: document.getElementById('x_axis'),
+    pixelsPerTick: 200,
+    tickFormat: format
+} );
+
+    // xAxis.render();
+    // yAxis.render();
     graph3.render();
 </script>
 </div>

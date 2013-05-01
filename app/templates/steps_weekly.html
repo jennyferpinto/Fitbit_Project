@@ -49,21 +49,29 @@
     left: 40px;
     height: 40px;
 }
+
 </style>
 <div id="chart_container">
 
     <div id="y_axis"></div>
     <div id = "chart1"></div>
+    <div id = "x-axis"></div>
 </div>
 
 <script>
 
+    // var weeklyStepsData = [
+    //     {% for a in weekly_steps_data %}
+    //         {
+    //             x: {{ a.date.day }},
+    //             y: {{ a.steps }},
+    //         },
+    //     {% endfor %}
+    // ];
+
     var weeklyStepsData = [
-        {% for a in weekly_steps_data %}
-            {
-                x: {{ a.date.day }},
-                y: {{ a.steps }},
-            },
+        {% for t in step_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
     ];
 
@@ -81,32 +89,28 @@
     var format = function(n) {
 
         var map = {
-            0: "23rd",
-            1: "24th",
-            2: "25th",
-            3: "26th",
-            4: "27th",
-            5: "29th",
-            6: "30th",
+        {% for t in date_tuples %}
+            {{t[0]|safe}}: {{t[1]|safe}},
+        {% endfor %}
         }
         return map[n];
     }
 
-    var xAxis = new Rickshaw.Graph.Axis.X({
-        graph: graph1,
-        tickFormat: format
-    });
+    // var xAxis = new Rickshaw.Graph.Axis.X({
+    //     graph: graph1,
+    //     tickFormat: format
+    // });
 
     var yAxis = new Rickshaw.Graph.Axis.Y({
                 graph: graph1,
                 orientation: 'left',
                 tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-                element: document.getElementById("y_axis")
+                element: document.getElementById('y_axis')
     });
 
     var x_ticks = new Rickshaw.Graph.Axis.X( {
     graph: graph1,
-    orientation: 'bottom',
+    orientation: 'top',
     element: document.getElementById('x_axis'),
     pixelsPerTick: 200,
     tickFormat: format
