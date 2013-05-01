@@ -11,8 +11,6 @@
 <p>{{daily_data}}</p>
 </form>
 
-<!-- <a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a> -->
-<!-- <a class="btn" href="{{url_for("weekly_data_charts")}}">Week</a> -->
 <a class="btn" href="{{url_for("days_goals")}}">Today's Goals</a>
 
 <script src="/static/js/d3.min.js"></script>
@@ -23,14 +21,10 @@
 
 <div id="chart"></div>
 <script>
+
 var dailyData = [
-        {% for day in days_list %}
-        {% for num in x_list %}
-            {
-                x: {{ num }},
-                y: {{ day }},
-            },
-        {% endfor %}
+        {% for t in daily_tuples %}
+          { "x": {{t[0]|safe}}, "y": {{t[1]|safe}} },
         {% endfor %}
     ];
 

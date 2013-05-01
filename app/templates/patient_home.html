@@ -9,7 +9,9 @@
 <p> Start off with syncing your fitbit </p>
 
 <a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a>
-<a class="btn" href="{{url_for("weekly_data_charts")}}">Week</a>
+<a class="btn" href="{{url_for("weekly_floors_chart")}}">Floors</a>
+<a class="btn" href="{{url_for("weekly_miles_chart")}}">Miles</a>
+<a class="btn" href="{{url_for("weekly_steps_chart")}}">Steps</a>
 <a class = "btn" href="{{url_for("day_view")}}">Today</a>
 
 {% endblock %}

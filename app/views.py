@@ -326,18 +326,40 @@ def days_goals():
                         daily_goals_tuples=daily_goals_tuples,
                         daily_activity_tuples=daily_activity_tuples)
 
-@app.route('/weekly_data', methods = ["GET"])
+@app.route('/weekly_steps', methods = ["GET"])
 @login_required
-def weekly_data_charts():
+def weekly_steps_chart():
   current_user_id = current_user.id
   # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
   weekly_steps_data = util.patients_weekly_steps(current_user.id)
-  weekly_floors_data = util.patients_weekly_floors(current_user.id)
-  weekly_miles_data = util.patients_weekly_miles(current_user.id)
+  # weekly_floors_data = util.patients_weekly_floors(current_user.id)
+  # weekly_miles_data = util.patients_weekly_miles(current_user.id)
   return render_template("steps_weekly.html",
-                        title="Week Overview",
-                        weekly_steps_data=weekly_steps_data,
-                        weekly_floors_data=weekly_floors_data,
+                        title="Steps",
+                        weekly_steps_data=weekly_steps_data)
+
+@app.route('/weekly_floors', methods = ["GET"])
+@login_required
+def weekly_floors_chart():
+  current_user_id = current_user.id
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
+  # weekly_steps_data = util.patients_weekly_steps(current_user.id)
+  weekly_floors_data = util.patients_weekly_floors(current_user.id)
+  # weekly_miles_data = util.patients_weekly_miles(current_user.id)
+  return render_template("floors_weekly.html",
+                        title="Floors",
+                        weekly_floors_data=weekly_floors_data)
+
+@app.route('/weekly_miles', methods = ["GET"])
+@login_required
+def weekly_miles_chart():
+  current_user_id = current_user.id
+  # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
+  # weekly_steps_data = util.patients_weekly_steps(current_user.id)
+  # weekly_floors_data = util.patients_weekly_floors(current_user.id)
+  weekly_miles_data = util.patients_weekly_miles(current_user.id)
+  return render_template("miles_weekly.html",
+                        title="Miles",
                         weekly_miles_data=weekly_miles_data)
 
 
