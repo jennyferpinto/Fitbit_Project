@@ -22,34 +22,36 @@
     width: 40px;
 }
 
-/*#x_axis {
+#x_axis {
     position: relative;
     left: 40px;
-    height: 40px;
-    top: 0;
-    bottom: 0;
-}*/
+/*    height: 40px;*/
+    bottom: 0px;
+}
+
+#stats_container {
+    position: relative;
+    float: right;
+    left: -150px;
+    bottom: -170px;
+
+}
+
 </style>
 
-<div id="chart_container">
-    <div id="y_axis"></div>
-    <div id = "goals_graph"></div>
-</div>
 
 <div id = "stats_container">
 
 <div id = "floors_info">
-
-<p id= "floors"> <img class="stairs" src="/static/images/stairs.png" height= "50" width= "50"> Floors: {{floors}}/{{floors_goal}}</p>
-
+<img class="stairs" src="/static/images/stairs.png" height= "50" width= "50"> Floors: {{floors}}/{{floors_goal}}</p>
 </div>
 
-<div id = "steps_info"
-<p id = "steps"> <img class="footprints" src="/static/images/footprints.png" height= "50" width= "50"> Steps: {{steps}}/{{steps_goal}}</p>
+<div id = "steps_info">
+<img class="footprints" src="/static/images/footprints.png" height= "50" width= "50"> Steps: {{steps}}/{{steps_goal}}</p>
 </div>
 
 <div id = "distance_info">
-<p id = "distance"> <img class="footprints" src="/static/images/map_pin.png" height= "50" width= "50"> Distance: {{distance}}/{{distance_goal}}</p>
+<img class="footprints" src="/static/images/map_pin.png" height= "50" width= "50"> Distance: {{distance}}/{{distance_goal}}</p>
 </div>
 
 <!-- <div id = "date_info">
@@ -58,14 +60,21 @@
 
 </div>
 
-// <script>
-var dailyData = [
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "goals_graph"></div>
+    <div id = "x_axis"></div>
+</div>
+
+<div>
+<script>
+var dailyStepsData = [
         {% for t in daily_activity_tuples %}
           { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
     ];
 
-var dailyGoals = [
+var dailyStepsGoals = [
         {% for t in daily_goals_tuples %}
           { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
         {% endfor %}
@@ -73,72 +82,74 @@ var dailyGoals = [
 
 var goals_graph = new Rickshaw.Graph( {
   element: document.querySelector("#goals_graph"),
-  renderer: 'bar',
-    series: [
-        {
-            data: dailyData,
-            color: 'steelblue'
-        }, {
-            data: dailyGoals,
-            color: 'lightblue'
-    } ]
-} );
-
-// var xAxis = new Rickshaw.Graph.Axis.Time({
-//         timeUnit: new Rickshaw.Fixtures.Time().unit('day'),
-//         graph: goals_graph
-//     });
-
-// var yAxis = new Rickshaw.Graph.Axis.Y({
-//     graph: goals_graph,
-//     tickFormat: Rickshaw.Fixtures.Number.formatKMBT
-// });
-
-    var yAxis = new Rickshaw.Graph.Axis.Y({
-                graph: goals_graph,
-                orientation: 'left',
-                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-                element: document.getElementById('y_axis')
-    });
-
-    // yAxis.render();
-    // xAxis.render();
-    goals_graph.render();
-// </script>
-
-
-<script>
-var dailyStepsData = [
-          { x: {{0}}, y: {{steps}} },
-    ];
-
-var dailyStepsGoals = [
-          { x: {{0}}, y: {{steps_goal}} },
-    ];
-
-var goals_graph = new Rickshaw.Graph( {
-  element: document.querySelector("#goals_graph"),
+  width: 700,
+  height: 500,
   renderer: 'bar',
     series: [
         {
             data: dailyStepsData,
-            color: 'steelblue'
+            color: 'steelblue',
+            name: 'Activity'
         }, {
             data: dailyStepsGoals,
-            color: 'lightblue'
+            color: 'lightblue',
+            name: 'Goals'
     } ]
 } );
 
-    var yAxis = new Rickshaw.Graph.Axis.Y({
-                graph: goals_graph,
-                orientation: 'left',
-                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-                element: document.getElementById('y_axis')
-    });
+var format = function(n) {
 
-    goals_graph.render();
+    var map = {
+    {% for t in format_tuples %}
+        {{t[0]|safe}}: "{{t[1]|safe}}",
+    {% endfor %}
+    }
+    return map[n];
+}
+
+var x_ticks = new Rickshaw.Graph.Axis.X( {
+    graph: goals_graph,
+    orientation: 'bottom',
+    element: document.getElementById('x_axis'),
+    pixelsPerTick: 200,
+    tickFormat: format
+} );
+
+// var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+//     graph: goals_graph,
+//     xFormatter: function(x) { return x },
+// } );
+
+var yAxis = new Rickshaw.Graph.Axis.Y({
+    graph: goals_graph,
+    orientation: 'left',
+    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+    element: document.getElementById('y_axis')
+});
+
+var legend = new Rickshaw.Graph.Legend({
+    graph: goals_graph,
+    element: document.querySelector('#goals_graph')
+});
+
+var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+    graph: goals_graph,
+    legend: legend
+});
+
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+    graph: goals_graph,
+    xFormatter: function(x) { return x },
+} );
+
+// var highlighter = new Rickshaw.Graph.Behavior.Series.Highlight({
+//     graph: goals_graph,
+//     legend: legend
+// });
+
+goals_graph.renderer.unstack = true;
+goals_graph.render();
 </script>
-
 </div>
 
 {% endblock %}

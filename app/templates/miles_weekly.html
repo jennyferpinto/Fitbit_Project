@@ -6,9 +6,6 @@
 
 <h2> Miles Walked This Week </h2>
 
-<a class="btn" href="{{url_for("weekly_steps_chart")}}">Steps</a>
-<a class="btn" href="{{url_for("weekly_floors_chart")}}">Floors</a>
-
 <style>
 #chart_container {
     position: relative;  /* needed for position absolute to work later */
@@ -18,7 +15,7 @@
 #chart3 {
     position: relative;
     left: 40px;
-    top:50px;
+    top: 50px;
 }
 
 #y_axis {
@@ -34,12 +31,26 @@
     bottom: -50px;
     /*height: 40px;*/
 }
+
+.btn-group {
+    position: relative;
+    left:250px;
+    top:20px;
+}
 </style>
 
 <div id="chart_container">
+
     <div id="y_axis"></div>
     <div id = "chart3"></div>
     <div id = "x_axis"></div>
+
+<div class="btn-group">
+<a class="btn btn-inverse" href="{{url_for("weekly_steps_chart")}}">Steps</a>
+<a class="btn btn-inverse" href="{{url_for("weekly_floors_chart")}}">Floors</a>
+<a class="btn btn-inverse" href="{{url_for("weekly_miles_chart")}}">Miles</a>
+</div>
+
 </div>
 
 <script>
@@ -65,7 +76,7 @@
     renderer: 'bar',
     series: [ {
         data: weeklyMilesData,
-        color: 'steelblue'
+        color: "#34D2AB"
     } ]
 } );
 
@@ -101,6 +112,12 @@
     element: document.getElementById('x_axis'),
     // pixelsPerTick: 200,
     tickFormat: format
+} );
+
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+    graph: graph3,
+    xFormatter: function(x) { return x },
+    yFormatter: function(y) { return y + " miles" }
 } );
 
     // xAxis.render();

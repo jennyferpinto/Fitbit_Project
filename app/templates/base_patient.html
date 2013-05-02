@@ -9,25 +9,26 @@
     {% endif %}
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="/static/css/rickshaw.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/overrides.css">
     <script src="/static/js/d3.min.js"></script>
     <script src="/static/js/d3.layout.min.js"></script>
     <script src="/static/js/rickshaw.min.js"></script>
-    <style>
-      a.btn {
+
+   <style>
+/*      a.btn {
         display: inline-block;
         color: #000000;
         padding: 5px;
         border: 1px solid #555;
         border-radius: 5px 5px;
-      }
+      }*/
 
 /*      div, img, hr, ul, li, img {
       border: 1px solid red;
       }*/
     </style>
 
-    <link rel="stylesheet" href="/static/css/overrides.css">
-    <script src="/static/js/jquery-1.9.1.min.js"></script>
+  <script src="/static/js/jquery-1.9.1.min.js"></script>
   </head>
 
   <body>
@@ -45,6 +46,7 @@
               <li class="active"><a href="/home">Home</a></li>
               <li><a href="/login">Log In</a></li>
               <li><a href="/logout">Logout</a></li>
+              <li><a href="/sync_fitbit">Sync</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Info <b class="caret">&nbsp;</b></a>
                 <ul class="dropdown-menu">
@@ -52,7 +54,7 @@
                   <li><a href="/logout">Logout</a></li>
                   <li class="divider">&nbsp;</li>
                   <li class="nav-header">User Activity</li>
-                  <li><a href="/day_view">Day's Activity</a></li>
+                  <li><a href="/day_view">Today's Activity</a></li>
                   <li><a href="/weekly_miles">Miles</a></li>
                   <li><a href="/weekly_steps">Steps</a></li>
                   <li><a href="/weekly_floors">Floors</a></li>

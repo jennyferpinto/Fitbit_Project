@@ -142,6 +142,8 @@ def fitbit_sync():
   model.session.commit()
   flash("Fitbit is synced!")
   return redirect(url_for("patient_home"))
+
+
 @app.route('/therapist_home', methods = ["POST", "GET"])
 @login_required
 def therapist_home():
@@ -295,6 +297,8 @@ def day_view():
   print "+++++++++++++++++++++++++++++++++++++++++++++"
   print daily_tuples
   print "+++++++++++++++++++++++++++++++++++++++++++++"
+  bars = ['Steps', 'Floors', 'Miles']
+  format_tuples = zip(x_list,bars)
   # days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
   # # gets all the floors, steps, distance info to display it as text
   # floors = days_activity.floors
@@ -313,7 +317,8 @@ def day_view():
                         name=name,
                         time_object=time_object,
                         days_list=days_list,
-                        daily_tuples=daily_tuples)
+                        daily_tuples=daily_tuples,
+                        format_tuples=format_tuples)
 
 
 @app.route('/days_goals', methods = ["POST", "GET"])
@@ -329,10 +334,13 @@ def days_goals():
   time_object = days_activity.date
   string_time = str(days_activity.date)
   stripped_time = string_time[:11]
-
+  x = 0
   days_list = [steps, floors, distance]
   x_list = [0,1,2]
   daily_activity_tuples = zip(x_list, days_list)
+
+  bars = ['Steps', 'Floors', 'Miles']
+  format_tuples = zip(x_list,bars)
 
   daily_goals = util.days_goals(current_user_id)
   steps_goal = daily_goals.step_goal
@@ -360,7 +368,9 @@ def days_goals():
                         time_object=time_object,
                         stripped_goal_data=stripped_goal_date,
                         daily_goals_tuples=daily_goals_tuples,
-                        daily_activity_tuples=daily_activity_tuples)
+                        daily_activity_tuples=daily_activity_tuples,
+                        x=x,
+                        format_tuples=format_tuples)
 
 @app.route('/weekly_steps', methods = ["GET","POST"])
 @login_required

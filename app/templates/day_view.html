@@ -36,11 +36,19 @@
     bottom: 0;
     width: 40px;
 }
+
+#x_axis {
+    position: relative;
+    left: 40px;
+/*    height: 40px;*/
+    bottom: 0px;
+}
 </style>
 
 <div id="chart_container">
     <div id="y_axis"></div>
     <div id = "day_graph"></div>
+    <div id = "x_axis"></div>
 </div>
 
 <script>
@@ -50,18 +58,10 @@ var dailyData = [
         {% endfor %}
     ];
 
-// {% for tuple in tuple_data %}
-//               {
-//                 x: {{ tuple[0][0], tuple[1][0], tuple[2][0] }},
-//                 y: {{ tuple[0][1], tuple[1][1], tuple[2][1] }},
-//               };
-// {% endfor %}
-//     ];
-
 var day_graph = new Rickshaw.Graph( {
     element: document.querySelector("#day_graph"),
-    width: 235,
-    height: 85,
+    width: 600,
+    height: 400,
     renderer: 'bar',
     series: [ {
         data: dailyData,
@@ -69,12 +69,35 @@ var day_graph = new Rickshaw.Graph( {
     } ]
 } );
 
+var format = function(n) {
+
+    var map = {
+    {% for t in format_tuples %}
+        {{t[0]|safe}}: "{{t[1]|safe}}",
+    {% endfor %}
+    }
+    return map[n];
+}
+
 var yAxis = new Rickshaw.Graph.Axis.Y({
-        graph: day_graph,
-        orientation: 'left',
-        tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-        element: document.getElementById('y_axis')
-    });
+    graph: day_graph,
+    orientation: 'left',
+    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+    element: document.getElementById('y_axis')
+});
+
+var x_ticks = new Rickshaw.Graph.Axis.X( {
+    graph: day_graph,
+    orientation: 'bottom',
+    element: document.getElementById('x_axis'),
+    // pixelsPerTick: 100,
+    tickFormat: format
+} );
+
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+    graph: day_graph,
+    xFormatter: function(x) { return x },
+} );
 
 day_graph.render();
 </script>
