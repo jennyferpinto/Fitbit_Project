@@ -89,7 +89,27 @@ def day_view(patient_id):
   patients_day = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
   return patients_day
 
+def month_view(patient_id):
+  pass
+
+# def yesterday_info(patient_id):
+#   start = date.today() - timedelta(days=1)
+#   print "++++++++++++++++++++++++++++++++++++++++++++"
+#   print start
+#   print "++++++++++++++++++++++++++++++++++++++++++++"
+#   query = model.session.query(Activity).\
+#             order_by(Activity.date.asc()).\
+#             filter(Activity.user_id == patient_id).\
+#             filter(Activity.date == start)
+#   return query
+
 def days_goals(patient_id):
+  # date_today = date.today()
+  # modified_date = date_today.strftime('%Y-%m-%d')
+  # print "********************************************************"
+  # print date_today
+  # print "********************************************************"
+  # days_goals = model.session.query(Goal).order_by(Activity.date.asc()).filter(Goal.user_id == patient_id).filter(Goal.date == date_today).first()
   days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == patient_id).first()
   return days_goals
 

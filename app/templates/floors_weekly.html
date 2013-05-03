@@ -77,7 +77,8 @@
     renderer: 'bar',
     series: [ {
         data: weeklyFloorsData,
-        color: "#34D2AB"
+        color: "#34D2AB",
+        name: "Floors"
     } ]
 } );
 
@@ -109,7 +110,7 @@
 var hoverDetail = new Rickshaw.Graph.HoverDetail( {
     graph: graph2,
     xFormatter: function(x) { return x },
-    yFormatter: function(y) { return y + " floors" }
+    yFormatter: function(y) { return y }
 } );
 
     // yAxis.render();

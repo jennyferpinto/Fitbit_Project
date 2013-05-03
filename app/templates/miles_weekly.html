@@ -76,7 +76,8 @@
     renderer: 'bar',
     series: [ {
         data: weeklyMilesData,
-        color: "#34D2AB"
+        color: "#34D2AB",
+        name: "Miles"
     } ]
 } );
 
@@ -117,7 +118,7 @@
 var hoverDetail = new Rickshaw.Graph.HoverDetail( {
     graph: graph3,
     xFormatter: function(x) { return x },
-    yFormatter: function(y) { return y + " miles" }
+    yFormatter: function(y) { return y }
 } );
 
     // xAxis.render();

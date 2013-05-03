@@ -34,7 +34,46 @@
     float: right;
     left: -150px;
     bottom: -170px;
+}
 
+#floors_img {
+    position: relative;
+/*    float: left;*/
+/*    padding: 10px;*/
+    right: 70px;
+}
+
+#floors_info {
+    position: relative;
+    float: right;
+}
+
+#footprints_img {
+    position: relative;
+/*    float: left;*/
+/*    padding:10px;*/
+    right: 70px;
+}
+
+#steps_info {
+    position: relative;
+    float:right;
+}
+
+#map_img {
+    position: relative;
+/*    float: left;*/
+/*    padding: 10px;*/
+    right: 70px;
+}
+
+#distance_info {
+    position: relative;
+    float:right;
+}
+
+#progress_bars {
+    width: 500px;\
 }
 
 </style>
@@ -42,23 +81,61 @@
 
 <div id = "stats_container">
 
+
+<div id = "floors_img">
+<img class="stairs" src="/static/images/stairs.png" height= "50" width= "50">
+</div>
 <div id = "floors_info">
-<img class="stairs" src="/static/images/stairs.png" height= "50" width= "50"> Floors: {{floors}}/{{floors_goal}}</p>
+Floors: {{floors}}/{{floors_goal}}</p>
 </div>
 
+
+<div id = "footprints_img">
+<img class="footprints" src="/static/images/footprints.png" height= "50" width= "50">
+</div>
 <div id = "steps_info">
-<img class="footprints" src="/static/images/footprints.png" height= "50" width= "50"> Steps: {{steps}}/{{steps_goal}}</p>
+Steps: {{steps}}/{{steps_goal}}</p>
 </div>
 
-<div id = "distance_info">
-<img class="footprints" src="/static/images/map_pin.png" height= "50" width= "50"> Distance: {{distance}}/{{distance_goal}}</p>
+
+<div id = "map_img">
+<img class="map" src="/static/images/map_pin.png" height= "50" width= "50">
 </div>
+<div id = "distance_info">
+Distance: {{distance}}/{{distance_goal}}</p>
+</div>
+
 
 <!-- <div id = "date_info">
 <p> Date: {{goal_date}}</p>
 </div> -->
-
 </div>
+
+
+<div id="progress_bars">
+    <div id="steps_progress">
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+</div>
+
+<div id="progress_bars">
+    <div id="floors_progress">
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+</div>
+
+<div id="progress_bars">
+    <div id="distance_progress">
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+</div>
+
 
 <div id="chart_container">
     <div id="y_axis"></div>
@@ -67,6 +144,38 @@
 </div>
 
 <div>
+
+<script>
+$(function() {
+    var actual_steps = {{steps|safe}};
+    var target_steps = {{steps_goal|safe}};
+    var steps_div = $("#steps_progress div.bar");
+    console.log(actual_steps/target_steps);
+    steps_div.width( actual_steps/target_steps*100 + "%");
+});
+
+</script>
+
+<script>
+$(function() {
+    var actual_floors = {{floors|safe}};
+    var target_floors = {{floors_goal|safe}};
+    var floors_div = $("#floors_progress div.bar");
+    console.log(actual_floors/target_floors);
+    floors_div.width(actual_floors/target_floors*100 + "%");
+});
+</script>
+
+<script>
+$(function() {
+    var actual_miles = {{distance|safe}};
+    var target_miles = {{distance_goal|safe}};
+    var miles_div = $("#distance_progress div.bar");
+    console.log(actual_miles/target_miles);
+    miles_div.width(actual_miles/target_miles*100 + "%");
+});
+</script>
+
 <script>
 var dailyStepsData = [
         {% for t in daily_activity_tuples %}

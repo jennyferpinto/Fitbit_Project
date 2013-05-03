@@ -2,16 +2,6 @@
 
 {% block body %}
 
-    <style>
-      a.btn {
-        display: inline-block;
-        color: #FFFFFF;
-        padding: 5px;
-        border: 1px solid #555;
-        border-radius: 5px 5px;
-      }
-    </style>
-
 <form method = "POST" action = "/therapists_patient_view" name = "Patients Home Page">
 
 <h1>{{name}}'s Info</h1>
@@ -24,5 +14,11 @@
 <a class="btn" href="{{url_for("patients_weekly_graphs")}}?patient_id={{patient_id}}">Weekly Graphs</a>
 
 <a class="btn" href="{{url_for("therapists_patients_daily")}}?patient_id={{patient_id}}">Daily Graph</a>
+
+<a class="btn" href="{{url_for("weekly_steps_chart")}}?patient_id={{patient_id}}">Week's Steps</a>
+
+<a class="btn" href="{{url_for("weekly_floors_chart")}}?patient_id={{patient_id}}">Week's Floors</a>
+
+<a class="btn" href="{{url_for("weekly_miles_chart")}}?patient_id={{patient_id}}">Week's Miles</a>
 
 {% endblock %}

@@ -133,7 +133,7 @@ def fitbit_sync():
                        user_key="5fec83e8ad9ea52dd63b47a42b87b852",
                        user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
   # if user.activities(left blank) then it will get the most recent activity for that user
-  user_info = user.activities()
+  user_info = user.activities('2013-01-08')
   # uses the current_user function from flask-login to get the id of the user who is logged in
   user_id = current_user.id
   # modified the insert_activities function from util.py to take two arguments
@@ -341,14 +341,17 @@ def days_goals():
 
   bars = ['Steps', 'Floors', 'Miles']
   format_tuples = zip(x_list,bars)
-
+  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
   daily_goals = util.days_goals(current_user_id)
-  steps_goal = daily_goals.step_goal
-  floors_goal = daily_goals.floors_goal
-  distance_goal = daily_goals.distance_goal
-  time_goal_set = daily_goals.date
-  goal_date = str(time_goal_set)
-  stripped_goal_date = goal_date[:10]
+  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  if daily_goals is not None:
+    steps_goal = daily_goals.step_goal
+    floors_goal = daily_goals.floors_goal
+    distance_goal = daily_goals.distance_goal
+    time_goal_set = daily_goals.date
+    goal_date = str(time_goal_set)
+    stripped_goal_date = goal_date[:10]
+  else: flash("No goals set")
   print "____________________________________________________________________"
   print stripped_goal_date
   print "____________________________________________________________________"
@@ -376,9 +379,13 @@ def days_goals():
 @login_required
 def weekly_steps_chart():
   current_user_id = current_user.id
+  if current_user.role == "therapist":
+    current_user_id = session.get('patient')
+  print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  print current_user.role
+  print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
-  weekly_steps_data = util.patients_weekly_steps(current_user.id)
-
+  weekly_steps_data = util.patients_weekly_steps(current_user_id)
   steps_list = []
   for element in weekly_steps_data:
     steps_list.append(element.steps)
@@ -401,9 +408,11 @@ def weekly_steps_chart():
 @login_required
 def weekly_floors_chart():
   current_user_id = current_user.id
+  if current_user.role == "therapist":
+    current_user_id = session.get('patient')
   # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
   # weekly_steps_data = util.patients_weekly_steps(current_user.id)
-  weekly_floors_data = util.patients_weekly_floors(current_user.id)
+  weekly_floors_data = util.patients_weekly_floors(current_user_id)
   # weekly_miles_data = util.patients_weekly_miles(current_user.id)
   floors_list = []
   for element in weekly_floors_data:
@@ -425,10 +434,12 @@ def weekly_floors_chart():
 @login_required
 def weekly_miles_chart():
   current_user_id = current_user.id
+  if current_user.role == "therapist":
+    current_user_id = session.get('patient')
   # all_user_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id)
   # weekly_steps_data = util.patients_weekly_steps(current_user.id)
   # weekly_floors_data = util.patients_weekly_floors(current_user.id)
-  weekly_miles_data = util.patients_weekly_miles(current_user.id)
+  weekly_miles_data = util.patients_weekly_miles(current_user_id)
   miles_list = []
   for element in weekly_miles_data:
     miles_list.append(element.distance)

@@ -4,7 +4,7 @@
 
 <form method = "POST" action = "/day_view" name = "day">
 <h2> {{name}} - Daily Activity Info </h2>
-<p> Floors: {{floors}} % up or down from yesterday </p>
+<p> Floors: {{floors}} </p>
 <p> Steps: {{steps}}</p>
 <p> Distance: {{distance}}</p>
 <p> Date: {{stripped_time}}</p>
@@ -65,7 +65,8 @@ var day_graph = new Rickshaw.Graph( {
     renderer: 'bar',
     series: [ {
         data: dailyData,
-        color: 'steelblue'
+        color: 'steelblue',
+        name: 'Daily Info'
     } ]
 } );
 
