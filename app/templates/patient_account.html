@@ -1,0 +1,12 @@
+{% extends "base_patient.html" %}
+
+{% block body %}
+
+<form method = "POST" action = "/patient_account" name = "Account Info"></form>
+
+<p>{{name}}'s Account Info</p>
+
+<p> Authorize your Fitbit below </p>
+
+<a class="btn" href="{{url_for("fitbit_access")}}">Authorize</a>
+{% endblock %}

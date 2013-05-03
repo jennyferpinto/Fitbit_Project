@@ -66,9 +66,6 @@ def login():
 def logout():
   logout_user()
   flash("You are now logged out")
-  # logged_in_user_id = current_user.id
-  # print "***********************************************************"
-  # print logged_in_user_id
   return redirect(url_for("home"))
 
 @app.route('/signup', methods = ["POST","GET"])
@@ -116,6 +113,16 @@ def form():
   return render_template("signup.html", title="Sign Up Form", form=form)
 
 
+@app.route('/patient_account', methods = ["POST", "GET"])
+@login_required
+def patient_account():
+  user = model.session.query(Users).filter(Users.id == current_user.id).one()
+  name = user.first_name
+  return render_template("patient_account.html",
+                          title="User Account",
+                          name=name)
+
+
 @app.route('/authorize_fitbit', methods = ["POST","GET"])
 @login_required
 def fitbit_access():
@@ -138,11 +145,20 @@ def oauth_complete():
   model.session.add(user)
   model.session.commit()
   flash("Congrats!")
-  return redirect("/home.html")
+  return redirect(url_for("/home"))
 
 @app.route('/sync_fitbit', methods = ["GET"])
 @login_required
 def fitbit_sync():
+  user_account = model.session.query(Users).filter(Users.id == current_user.id).one()
+  user_secret = user_account.user_secret
+  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  print user_secret
+  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  user_key = user_account.user_key
+  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  print user_key
+  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   # hard coded me as user so that I can retrieve my data
   user = fitbit.Fitbit('c91f84cd10f04cebad9beb7d4812eb90',
                        'e2b38ed6dad443e8bad8efbe3e0e3da5',
@@ -222,9 +238,53 @@ def patient_home():
   return render_template("patient_home.html", title = "Patient",
                         name = name)
 
-@app.route('/day_view', methods = ["POST", "GET"])
+
+@app.route('/therapist_patients_daily', methods = ["POST", "GET"])
 @login_required
-def day_view():
+def therapist_patients_daily():
+  patient_id = session.get('patient')
+  name = current_user.first_name
+  days_activity = util.days_activity(patient_id)
+  steps = days_activity.steps
+  floors = days_activity.floors
+  distance = days_activity.distance
+  time_object = days_activity.date
+  string_time = str(days_activity.date)
+  stripped_time = string_time[:11]
+  days_list = [steps, floors, distance]
+  x_list = [0,1,2]
+  daily_activity_tuples = zip(x_list, days_list)
+  bars = ['Steps', 'Floors', 'Miles']
+  format_tuples = zip(x_list,bars)
+  daily_goals = util.days_goals(patient_id)
+  if daily_goals is not None:
+    steps_goal = daily_goals.step_goal
+    floors_goal = daily_goals.floors_goal
+    distance_goal = daily_goals.distance_goal
+    time_goal_set = daily_goals.date
+    goal_date = str(time_goal_set)
+    stripped_goal_date = goal_date[:10]
+    goals_list = [steps_goal, floors_goal, distance_goal]
+    daily_goals_tuples = zip(x_list, goals_list)
+  else: flash("No goals set")
+  return render_template("therapist_patients_daily.html",
+                        floors=floors,
+                        steps=steps,
+                        distance=distance,
+                        stripped_time=stripped_time,
+                        floors_goal=floors_goal,
+                        steps_goal=steps_goal,
+                        distance_goal=distance_goal,
+                        time_object=time_object,
+                        stripped_goal_data=stripped_goal_date,
+                        daily_goals_tuples=daily_goals_tuples,
+                        daily_activity_tuples=daily_activity_tuples,
+                        format_tuples=format_tuples)
+
+
+@app.route('/days_goals', methods = ["POST", "GET"])
+@login_required
+def days_goals():
   current_user_id = current_user.id
   name = current_user.first_name
   days_activity = util.days_activity(current_user_id)
@@ -235,93 +295,21 @@ def day_view():
   string_time = str(days_activity.date)
   stripped_time = string_time[:11]
   days_list = [steps, floors, distance]
-  print days_list
   x_list = [0,1,2]
-  daily_tuples = zip(x_list, days_list)
-  print "+++++++++++++++++++++++++++++++++++++++++++++"
-  print daily_tuples
-  print "+++++++++++++++++++++++++++++++++++++++++++++"
+  daily_activity_tuples = zip(x_list, days_list)
   bars = ['Steps', 'Floors', 'Miles']
   format_tuples = zip(x_list,bars)
-  # days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == current_user_id).first()
-  # # gets all the floors, steps, distance info to display it as text
-  # floors = days_activity.floors
-  # steps = days_activity.steps
-  # distance = days_activity.distance
-  # time_object = days_activity.date
-  # string_time = str(time_object)
-  # # stripped the time to exclude everything but year, month, day
-  # stripped_time = string_time[:11]
-  # daily_data = util.day_view(days_activity)
-  return render_template("day_view.html", title="Day Overview",
-                        floors=floors,
-                        steps=steps,
-                        distance=distance,
-                        stripped_time=stripped_time,
-                        name=name,
-                        time_object=time_object,
-                        days_list=days_list,
-                        daily_tuples=daily_tuples,
-                        format_tuples=format_tuples)
-
-
-@app.route('/days_goals', methods = ["POST", "GET"])
-@login_required
-def days_goals():
-  if current_user.role == "therapist":
-    patient_id = session.get('patient')
-    name = current_user.first_name
-    days_activity = util.days_activity(patient_id)
-    steps = days_activity.steps
-    floors = days_activity.floors
-    distance = days_activity.distance
-    time_object = days_activity.date
-    string_time = str(days_activity.date)
-    stripped_time = string_time[:11]
-    x = 0
-    days_list = [steps, floors, distance]
-    x_list = [0,1,2]
-    daily_activity_tuples = zip(x_list, days_list)
-    bars = ['Steps', 'Floors', 'Miles']
-    format_tuples = zip(x_list,bars)
-    daily_goals = util.days_goals(patient_id)
-    if daily_goals is not None:
-      steps_goal = daily_goals.step_goal
-      floors_goal = daily_goals.floors_goal
-      distance_goal = daily_goals.distance_goal
-      time_goal_set = daily_goals.date
-      goal_date = str(time_goal_set)
-      stripped_goal_date = goal_date[:10]
-      goals_list = [steps_goal, floors_goal, distance_goal]
-      daily_goals_tuples = zip(x_list, goals_list)
-    else: flash("No goals set")
-  else:
-    current_user_id = current_user.id
-    name = current_user.first_name
-    days_activity = util.days_activity(current_user_id)
-    steps = days_activity.steps
-    floors = days_activity.floors
-    distance = days_activity.distance
-    time_object = days_activity.date
-    string_time = str(days_activity.date)
-    stripped_time = string_time[:11]
-    x = 0
-    days_list = [steps, floors, distance]
-    x_list = [0,1,2]
-    daily_activity_tuples = zip(x_list, days_list)
-    bars = ['Steps', 'Floors', 'Miles']
-    format_tuples = zip(x_list,bars)
-    daily_goals = util.days_goals(current_user_id)
-    if daily_goals is not None:
-      steps_goal = daily_goals.step_goal
-      floors_goal = daily_goals.floors_goal
-      distance_goal = daily_goals.distance_goal
-      time_goal_set = daily_goals.date
-      goal_date = str(time_goal_set)
-      stripped_goal_date = goal_date[:10]
-      goals_list = [steps_goal, floors_goal, distance_goal]
-      daily_goals_tuples = zip(x_list, goals_list)
-    else: flash("No goals set")
+  daily_goals = util.days_goals(current_user_id)
+  if daily_goals is not None:
+    steps_goal = daily_goals.step_goal
+    floors_goal = daily_goals.floors_goal
+    distance_goal = daily_goals.distance_goal
+    time_goal_set = daily_goals.date
+    goal_date = str(time_goal_set)
+    stripped_goal_date = goal_date[:10]
+    goals_list = [steps_goal, floors_goal, distance_goal]
+    daily_goals_tuples = zip(x_list, goals_list)
+  else: flash("No goals set")
   return render_template("days_goals.html",
                         floors=floors,
                         steps=steps,
@@ -334,7 +322,6 @@ def days_goals():
                         stripped_goal_data=stripped_goal_date,
                         daily_goals_tuples=daily_goals_tuples,
                         daily_activity_tuples=daily_activity_tuples,
-                        x=x,
                         format_tuples=format_tuples)
 
 
@@ -364,19 +351,6 @@ def therapist_weekly_steps():
 @login_required
 def weekly_steps_chart():
   current_user_id = current_user.id
-  # if current_user.role == "therapist":
-  #   patient_id = session.get('patient')
-  #   weekly_steps_data = util.patients_weekly_steps(patient_id)
-  #   steps_list = []
-  #   for element in weekly_steps_data:
-  #     steps_list.append(element.steps)
-  #   x_axis = [0,1,2,3,4,5,6]
-  #   step_tuples = zip(x_axis, steps_list)
-  #   dates_list = []
-  #   for element in weekly_steps_data:
-  #     dates_list.append(element.date.strftime('%m'+'.'+'%d'))
-  #   date_tuples = zip(x_axis, dates_list)
-    # current_user_id == "patient"
   weekly_steps_data = util.patients_weekly_steps(current_user_id)
   steps_list = []
   for element in weekly_steps_data:
@@ -421,19 +395,6 @@ def therapist_weekly_floors():
 @login_required
 def weekly_floors_chart():
   current_user_id = current_user.id
-  # if current_user.role == "therapist":
-  #   patient_id = session.get('patient')
-  #   weekly_floors_data = util.patients_weekly_floors(patient_id)
-  #   floors_list = []
-  #   for element in weekly_floors_data:
-  #     floors_list.append(element.floors)
-  #   x_axis = [0,1,2,3,4,5,6]
-  #   floor_tuples = zip(x_axis, floors_list)
-  #   dates_list = []
-  #   for element in weekly_floors_data:
-  #     dates_list.append(element.date.strftime('%m'+'.'+'%d'))
-  #   date_tuples = zip(x_axis, dates_list)
-  # else:
   weekly_floors_data = util.patients_weekly_floors(current_user_id)
   floors_list = []
   for element in weekly_floors_data:
@@ -449,6 +410,7 @@ def weekly_floors_chart():
                         weekly_floors_data=weekly_floors_data,
                         floor_tuples=floor_tuples,
                         date_tuples=date_tuples)
+
 
 @app.route('/therapist_weekly_miles', methods = ["GET","POST"])
 @login_required
@@ -475,18 +437,6 @@ def therapist_weekly_miles():
 @login_required
 def weekly_miles_chart():
   current_user_id = current_user.id
-  # if current_user.role == "therapist":
-  #   patient_id = session.get('patient')
-  #   weekly_miles_data = util.patients_weekly_miles(patient_id)
-  #   miles_list = []
-  #   for element in weekly_miles_data:
-  #     miles_list.append(element.distance)
-  #   x_axis = [0,1,2,3,4,5,6]
-  #   mile_tuples = zip(x_axis, miles_list)
-  #   dates_list = []
-  #   for element in weekly_miles_data:
-  #     dates_list.append(element.date.strftime('%m'+'.'+'%d'))
-  #   date_tuples = zip(x_axis, dates_list)
   weekly_miles_data = util.patients_weekly_miles(current_user_id)
   miles_list = []
   for element in weekly_miles_data:
@@ -502,5 +452,3 @@ def weekly_miles_chart():
                         weekly_miles_data=weekly_miles_data,
                         mile_tuples=mile_tuples,
                         date_tuples=date_tuples)
-
-

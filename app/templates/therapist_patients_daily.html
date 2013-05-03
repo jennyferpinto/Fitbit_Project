@@ -1,0 +1,264 @@
+{% extends "base_therapist.html" %}
+
+{% block body %}
+
+<form method = "POST" action = "/therapist_patients_daily" name = "day"></form>
+
+<style>
+#chart_container {
+    position: relative;  /* needed for position absolute to work later */
+    padding-bottom: 10px;
+}
+
+#goals_graph {
+    position: relative;
+    left: 40px;
+}
+
+#y_axis {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+}
+
+#x_axis {
+    position: relative;
+    left: 40px;
+/*    height: 40px;*/
+    bottom: 0px;
+}
+
+#stats_container {
+    position: relative;
+    float: right;
+    left: -150px;
+    bottom: -170px;
+}
+
+#floors_img {
+    position: relative;
+/*    float: left;*/
+/*    padding: 10px;*/
+    right: 70px;
+}
+
+#floors_info {
+    position: relative;
+    float: right;
+}
+
+#footprints_img {
+    position: relative;
+/*    float: left;*/
+/*    padding:10px;*/
+    right: 70px;
+}
+
+#steps_info {
+    position: relative;
+    float:right;
+}
+
+#map_img {
+    position: relative;
+/*    float: left;*/
+/*    padding: 10px;*/
+    right: 70px;
+}
+
+#distance_info {
+    position: relative;
+    float:right;
+}
+
+#progress_bars {
+    width: 500px;\
+}
+
+</style>
+
+
+<div id = "stats_container">
+
+
+<div id = "floors_img">
+<img class="stairs" src="/static/images/stairs.png" height= "50" width= "50">
+</div>
+<div id = "floors_info">
+Floors: {{floors}}/{{floors_goal}}</p>
+</div>
+
+
+<div id = "footprints_img">
+<img class="footprints" src="/static/images/footprints.png" height= "50" width= "50">
+</div>
+<div id = "steps_info">
+Steps: {{steps}}/{{steps_goal}}</p>
+</div>
+
+
+<div id = "map_img">
+<img class="map" src="/static/images/map_pin.png" height= "50" width= "50">
+</div>
+<div id = "distance_info">
+Distance: {{distance}}/{{distance_goal}}</p>
+</div>
+
+
+<!-- <div id = "date_info">
+<p> Date: {{goal_date}}</p>
+</div> -->
+</div>
+
+
+<div id="progress_bars">
+    <div id="steps_progress">
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+</div>
+
+<div id="progress_bars">
+    <div id="floors_progress">
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+</div>
+
+<div id="progress_bars">
+    <div id="distance_progress">
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "goals_graph"></div>
+    <div id = "x_axis"></div>
+</div>
+
+<div>
+
+<script>
+$(function() {
+    var actual_steps = {{steps|safe}};
+    var target_steps = {{steps_goal|safe}};
+    var steps_div = $("#steps_progress div.bar");
+    console.log(actual_steps/target_steps);
+    steps_div.width( actual_steps/target_steps*100 + "%");
+});
+
+</script>
+
+<script>
+$(function() {
+    var actual_floors = {{floors|safe}};
+    var target_floors = {{floors_goal|safe}};
+    var floors_div = $("#floors_progress div.bar");
+    console.log(actual_floors/target_floors);
+    floors_div.width(actual_floors/target_floors*100 + "%");
+});
+</script>
+
+<script>
+$(function() {
+    var actual_miles = {{distance|safe}};
+    var target_miles = {{distance_goal|safe}};
+    var miles_div = $("#distance_progress div.bar");
+    console.log(actual_miles/target_miles);
+    miles_div.width(actual_miles/target_miles*100 + "%");
+});
+</script>
+
+<script>
+var dailyStepsData = [
+        {% for t in daily_activity_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
+        {% endfor %}
+    ];
+
+var dailyStepsGoals = [
+        {% for t in daily_goals_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
+        {% endfor %}
+    ];
+
+var goals_graph = new Rickshaw.Graph( {
+  element: document.querySelector("#goals_graph"),
+  width: 700,
+  height: 500,
+  renderer: 'bar',
+    series: [
+        {
+            data: dailyStepsData,
+            color: 'steelblue',
+            name: 'Activity'
+        }, {
+            data: dailyStepsGoals,
+            color: 'lightblue',
+            name: 'Goals'
+    } ]
+} );
+
+var format = function(n) {
+
+    var map = {
+    {% for t in format_tuples %}
+        {{t[0]|safe}}: "{{t[1]|safe}}",
+    {% endfor %}
+    }
+    return map[n];
+}
+
+var x_ticks = new Rickshaw.Graph.Axis.X( {
+    graph: goals_graph,
+    orientation: 'bottom',
+    element: document.getElementById('x_axis'),
+    pixelsPerTick: 200,
+    tickFormat: format
+} );
+
+// var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+//     graph: goals_graph,
+//     xFormatter: function(x) { return x },
+// } );
+
+var yAxis = new Rickshaw.Graph.Axis.Y({
+    graph: goals_graph,
+    orientation: 'left',
+    tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+    element: document.getElementById('y_axis')
+});
+
+var legend = new Rickshaw.Graph.Legend({
+    graph: goals_graph,
+    element: document.querySelector('#goals_graph')
+});
+
+var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+    graph: goals_graph,
+    legend: legend
+});
+
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+    graph: goals_graph,
+    xFormatter: function(x) { return x },
+} );
+
+// var highlighter = new Rickshaw.Graph.Behavior.Series.Highlight({
+//     graph: goals_graph,
+//     legend: legend
+// });
+
+goals_graph.renderer.unstack = true;
+goals_graph.render();
+</script>
+</div>
+
+{% endblock %}
