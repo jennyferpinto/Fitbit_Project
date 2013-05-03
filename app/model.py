@@ -10,9 +10,6 @@ from flask.ext.wtf import Required
 
  # leave as None to manually connect and create tables
 # would then use:
-# engine = create_engine("postgresql:///fitbit_db", echo = True)
-#  # then:
-#  Base.metadata.create_all(engine)
 
 # ENGINE = None
 # SESSION = None
@@ -24,6 +21,9 @@ session = scoped_session(sessionmaker(bind = engine, autocommit = False, autoflu
 Base = declarative_base()
 Base.query = session.query_property()
 
+def initialize():
+  Base.metadata.bind = engine
+  Base.metadata.create_all(engine)
 
 class Users(Base):
   __tablename__ = "users"
@@ -39,6 +39,7 @@ class Users(Base):
   therapist = Column(Integer, nullable=True)
   user_key = Column(String(255), nullable=True)
   user_secret = Column(String(255), nullable=True)
+  verifier = Column(String(255), nullable=True)
   activities = relationship("Activity", backref="users")
   goals = relationship("Goal", backref="users")
 

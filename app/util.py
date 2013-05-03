@@ -73,19 +73,6 @@ def patients_weekly_miles(patient_id):
   return query.all()
 
 def day_view(patient_id):
-  # days_activity = query
-  # floors = days_activity.floors
-  # steps = days_activity.steps
-  # distance = days_activity.distance
-  # time_object = days_activity.date
-  # string_time = str(time_object)
-  # daily_dataset = [
-  #     {'x': 0, 'y': floors},
-  #     {'x': 1, 'y': steps},
-  #     {'x': 2, 'y': distance},
-  #     ]
-  # jsonified_daily_data = json.dumps(daily_dataset)
-  # daily_data = jsonified_daily_data.replace('"','')
   patients_day = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
   return patients_day
 

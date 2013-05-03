@@ -1,0 +1,122 @@
+{% extends "base_therapist.html" %}
+
+{% block body %}
+
+<form method = "POST" action = "/therapist_weekly_floors" name = "patients"></form>
+
+<h2> Floors Climbed This Week </h2>
+
+<style>
+#chart_container {
+    position: relative;  /* needed for position absolute to work later */
+    padding-bottom: 10px;
+}
+
+#chart2 {
+    position: relative;
+    left: 40px;
+    top: 50px;
+}
+
+#y_axis {
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    width: 40px;
+}
+
+#x_axis {
+    position: relative;
+    left: 40px;
+/*    height: 40px;*/
+    bottom: -50px;
+}
+
+.btn-group {
+    position: relative;
+    left:250px;
+    top:20px;
+}
+</style>
+
+
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "chart2"></div>
+    <div id = "x_axis"></div>
+
+<div class="btn-group">
+<a class="btn btn-inverse" href="{{url_for("weekly_steps_chart")}}">Steps</a>
+<a class="btn btn-inverse" href="{{url_for("weekly_floors_chart")}}">Floors</a>
+<a class="btn btn-inverse" href="{{url_for("weekly_miles_chart")}}">Miles</a>
+</div>
+
+</div>
+
+<script>
+
+    // var weeklyFloorsData = [
+    //     {% for a in weekly_floors_data %}
+    //         {
+    //             x: {{ a.date.strftime('%s') }},
+    //             y: {{ a.floors }},
+    //         },
+    //     {% endfor %}
+    // ];
+
+    var weeklyFloorsData = [
+        {% for t in floor_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
+        {% endfor %}
+    ];
+
+    var graph2 = new Rickshaw.Graph( {
+    element: document.querySelector("#chart2"),
+    width: 600,
+    height: 400,
+    renderer: 'bar',
+    series: [ {
+        data: weeklyFloorsData,
+        color: "#34D2AB",
+        name: "Floors"
+    } ]
+} );
+
+    var format = function(n) {
+
+        var map = {
+        {% for t in date_tuples %}
+            {{t[0]|safe}}: "{{t[1]|safe}}",
+        {% endfor %}
+        }
+        return map[n];
+    }
+
+    var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: graph2,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.getElementById('y_axis')
+    });
+
+    var x_ticks = new Rickshaw.Graph.Axis.X( {
+    graph: graph2,
+    orientation: 'bottom',
+    element: document.getElementById('x_axis'),
+    // pixelsPerTick: 200,
+    tickFormat: format
+} );
+
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+    graph: graph2,
+    xFormatter: function(x) { return x },
+    yFormatter: function(y) { return y }
+} );
+
+    // yAxis.render();
+    // xAxis.render();
+    graph2.render();
+</script>
+</div>
+
+{% endblock %}
