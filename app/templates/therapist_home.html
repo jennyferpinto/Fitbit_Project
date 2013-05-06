@@ -2,8 +2,36 @@
 
 {% block body %}
 
-<h1> Welcome, {{name}}! </h1>
+<style>
 
-<a class="btn" href="{{url_for("patients_list")}}">Patients</a>
+#title_text {
+  padding-bottom: 30px;
+  color: #778899;
+}
 
+#inner {
+  width: 50%;
+  margin: 0 auto;
+/*  text-align: center*/
+}
+
+#outer {
+  width: 100%;
+}
+
+#button {
+  padding-left: 150px;
+}
+
+</style>
+
+<div id="outer">
+<div id="inner">
+<h1 id="title_text"> Welcome, {{name}}! </h1>
+
+<div id="button">
+<a class="btn" href="{{url_for("patients_list")}}">View Patients</a>
+</div>
+</div>
+</div>
 {% endblock %}

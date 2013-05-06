@@ -4,9 +4,33 @@
 
 <form method = "POST" action = "/patient_account" name = "Account Info"></form>
 
-<p>{{name}}'s Account Info</p>
+<style>
 
-<p> Authorize your Fitbit below </p>
+#info_title {
+  padding-bottom: 20px;
+  color: #778899;
+}
+
+#inner {
+  width: 50%;
+  margin: 0 auto;
+  text-align: center;
+  padding-right: 80px;
+}
+
+#outer {
+  width: 100%;
+}
+
+</style>
+
+<div id="outer">
+<div id="inner">
+<h2 id="info_title">{{name}}'s Account Info</h2>
+
+<p><b>Authorize your Fitbit below:</b></p>
 
 <a class="btn" href="{{url_for("fitbit_access")}}">Authorize</a>
+</div>
+</div>
 {% endblock %}

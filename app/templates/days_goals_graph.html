@@ -29,87 +29,10 @@
     bottom: 0px;
 }
 
-#stats_container {
-    position: relative;
-    float: right;
-    left: -150px;
-    bottom: -170px;
+#back_button {
+  padding-right: 25px;
 }
-
-#floors_img {
-    position: relative;
-/*    float: left;*/
-/*    padding: 10px;*/
-    right: 70px;
-}
-
-#floors_info {
-    position: relative;
-    float: right;
-}
-
-#footprints_img {
-    position: relative;
-/*    float: left;*/
-/*    padding:10px;*/
-    right: 70px;
-}
-
-#steps_info {
-    position: relative;
-    float:right;
-}
-
-#map_img {
-    position: relative;
-/*    float: left;*/
-/*    padding: 10px;*/
-    right: 70px;
-}
-
-#distance_info {
-    position: relative;
-    float:right;
-}
-
-
 </style>
-
-<div id="back_button">
-<ul class="pager">
-  <li><a href="{{url_for("days_goals")}}">Back</a></li>
-</ul>
-</div>
-
-
-<div id = "stats_container">
-
-
-<div id = "floors_img">
-<img class="stairs" src="/static/images/stairs.png" height= "50" width= "50">
-</div>
-<div id = "floors_info">
-Floors: {{floors}}/{{floors_goal}}</p>
-</div>
-
-
-<div id = "footprints_img">
-<img class="footprints" src="/static/images/footprints.png" height= "50" width= "50">
-</div>
-<div id = "steps_info">
-Steps: {{steps}}/{{steps_goal}}</p>
-</div>
-
-
-<div id = "map_img">
-<img class="map" src="/static/images/map_pin.png" height= "50" width= "50">
-</div>
-<div id = "distance_info">
-Distance: {{distance}}/{{distance_goal}}</p>
-</div>
-
-</div>
-
 
 
 <div id="chart_container">
@@ -118,9 +41,13 @@ Distance: {{distance}}/{{distance_goal}}</p>
     <div id = "x_axis"></div>
 </div>
 
+<div id="back_button">
+<ul class="pager">
+  <li><a href="{{url_for("days_goals")}}">Back</a></li>
+</ul>
+</div>
+
 <div>
-
-
 <script>
 var dailyStepsData = [
         {% for t in daily_activity_tuples %}

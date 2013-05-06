@@ -2,31 +2,82 @@
 
 {% block body %}
 
+
+<style>
+
+#greeting {
+  padding-bottom: 20px;
+}
+
+#inner {
+  width: 50%;
+  margin: 50px;
+}
+
+#outer {
+  width: 100%;
+}
+
+#sync {
+  padding-bottom: 20px;
+}
+
+#sync_title{
+  float:left;
+}
+
+#sync_button {
+  float:right;
+}
+
+#menus {
+  padding-top: 40px;
+}
+</style>
+
+<div id="outer">
+<div id="inner">
+
 <form method = "POST" action = "/patient_home" name = "patient"></form>
 
-<h2> Welcome, {{name}} </h2>
+<h2 id="greeting"> Hi {{name}}! </h2>
 
-<p><b>View Your Account Info Below</b></p>
-
-<div>
+<div id="sync">
+<div id="sync_title"><p>Sync Your Fitbit Here</p></div>
+<div id="sync_button">
 <a class="btn btn-info" href="{{url_for("fitbit_sync")}}">Sync</a>
+</div>
 </div>
 
 
-
-
+<div id= "menus">
+<div id="first_drop">
 <div class="btn-group">
-<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action
+<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Weekly Account Activity
 <span class="caret"></span></a>
 <ul class="dropdown-menu">
-    <!-- dropdown menu links -->
+<li><a href="{{url_for("weekly_floors_chart")}}">Floors</a></li>
+<li><a href="{{url_for("weekly_miles_chart")}}">Miles</a></li>
+<li><a href="{{url_for("weekly_steps_chart")}}">Steps</a></li>
 </ul>
-<li><a href="/weekly_floors">Floors</a></li>
-<a class="btn" href="{{url_for("weekly_floors_chart")}}">Floors</a>
-<a class="btn" href="{{url_for("weekly_miles_chart")}}">Miles</a>
-<a class="btn" href="{{url_for("weekly_steps_chart")}}">Steps</a>
-<a class = "btn" href="{{url_for("days_goals")}}">Goals</a>
-<a class = "btn" href="{{url_for("days_steps_activity")}}">Today's Activity</a>
+</div>
+</div>
+
+<div id="second_drop">
+<div class="btn-group">
+<a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">Daily Activity
+<span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="{{url_for("days_goals")}}">Goals</a></li>
+<li><a href="{{url_for("days_steps_activity")}}">Steps</a></li>
+<li><a href="{{url_for("days_floors_activity")}}">Floors</a></li>
+<li><a href="{{url_for("days_distance_activity")}}">Miles</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
 </div>
 
 {% endblock %}

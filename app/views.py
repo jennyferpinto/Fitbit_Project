@@ -495,18 +495,17 @@ def days_floors_activity():
 @app.route('/therapist_weekly_steps', methods = ["GET", "POST"])
 @login_required
 def therapist_weekly_steps():
-  if current_user.role == "therapist":
-    patient_id = session.get('patient')
-    weekly_steps_data = util.patients_weekly_steps(patient_id)
-    steps_list = []
-    for element in weekly_steps_data:
-      steps_list.append(element.steps)
-    x_axis = [0,1,2,3,4,5,6]
-    step_tuples = zip(x_axis, steps_list)
-    dates_list = []
-    for element in weekly_steps_data:
-      dates_list.append(element.date.strftime('%m'+'.'+'%d'))
-    date_tuples = zip(x_axis, dates_list)
+  patient_id = session.get('patient')
+  weekly_steps_data = util.patients_weekly_steps(patient_id)
+  steps_list = []
+  for element in weekly_steps_data:
+    steps_list.append(element.steps)
+  x_axis = [0,1,2,3,4,5,6]
+  step_tuples = zip(x_axis, steps_list)
+  dates_list = []
+  for element in weekly_steps_data:
+    dates_list.append(element.date.strftime('%m'+'.'+'%d'))
+  date_tuples = zip(x_axis, dates_list)
   return render_template("therapist_weekly_steps.html",
                         title="Steps",
                         weekly_steps_data=weekly_steps_data,

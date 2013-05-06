@@ -71,34 +71,53 @@
     float:right;
 }
 
+.btn-group {
+    position: relative;
+    left:250px;
+    top:20px;
+}
+
+#info_title {
+  padding-bottom: 30px;
+  color: #778899;
+}
+
+.text_label {
+  padding-top: 5px;
+/*  text-align: center;*/
+  color: #2F4F4F;
+}
+
 </style>
 
 
 <div id = "stats_container">
 
+<h3 id="info_title">Today's Activity</h3>
 
 <div id = "floors_img">
 <img class="stairs" src="/static/images/stairs.png" height= "50" width= "50">
 </div>
-<div id = "floors_info">
-Floors: {{floors}}
+<div class = "text_label" id = "floors_info">
+{{floors}} <b>Floors</b>
 </div>
 
 
 <div id = "footprints_img">
 <img class="footprints" src="/static/images/footprints.png" height= "50" width= "50">
 </div>
-<div id = "steps_info">
-Steps: {{steps}}
+<div class = "text_label" id = "steps_info">
+{{steps}} <b>Steps</b>
 </div>
 
 
 <div id = "map_img">
 <img class="map" src="/static/images/map_pin.png" height= "50" width= "50">
 </div>
-<div id = "distance_info">
-Distance: {{distance}}
+<div class = "text_label" id = "distance_info">
+{{distance}} <b>Distance</b>
 </div>
+
 </div>
 
 <div id="chart_container">
@@ -131,8 +150,8 @@ var dailyStepsData = [
 
 var daily_steps_graph = new Rickshaw.Graph( {
   element: document.querySelector("#daily_steps_graph"),
-  width: 700,
-  height: 500,
+  width: 600,
+  height: 400,
   renderer: 'bar',
     series: [
         {

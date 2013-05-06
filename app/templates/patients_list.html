@@ -2,14 +2,43 @@
 
 {% block body %}
 
-<h2> Patients </h2>
+<style>
+
+#title_text {
+  padding-bottom: 30px;
+  color: #778899;
+}
+
+#inner {
+  width: 50%;
+  margin: 0 auto;
+/*  text-align: center*/
+}
+
+#outer {
+  width: 100%;
+}
+
+#button {
+  padding-left: 150px;
+}
+
+#patient_button {
+  padding-bottom: 20px;
+}
+
+</style>
+
+
+<h2 id="title_text"> Patients </h2>
 
 {% for patients in patients_list %}
 
   {{patients.first_name}}
 
-  <a class="btn" href="{{url_for("therapists_patient_view")}}?patient_id={{patients.id}}">Info</a>
-
+  <div id = "patient_button">
+  <a class="btn" href="{{url_for("therapists_patient_view")}}?patient_id={{patients.id}}">Info</a><br>
+  </div>
 {% endfor %}
 
 {% endblock %}
