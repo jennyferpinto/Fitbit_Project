@@ -2,7 +2,7 @@
 
 {% block body %}
 
-<form method = "POST" action = "/daily_activity" name = "day"></form>
+<form method = "POST" action = "/daily_floors_activity" name = "day"></form>
 
 <style>
 #chart_container {
@@ -10,7 +10,7 @@
     padding-bottom: 10px;
 }
 
-#daily_steps_graph {
+#daily_floors_graph {
     position: relative;
     left: 40px;
 }
@@ -22,11 +22,11 @@
     width: 40px;
 }
 
-/*#x_axis {
+#x_axis {
     position: relative;
     left: 40px;
     bottom: 0px;
-}*/
+}
 
 #stats_container {
     position: relative;
@@ -101,36 +101,51 @@ Distance: {{distance}}
 </div>
 </div>
 
-<div>
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "daily_floors_graph"></div>
+    <div id = "x_axis"></div>
+</div>
 
+<div class="btn-group">
+<a class="btn btn-inverse" href="{{url_for("days_steps_activity")}}">Steps</a>
+<a class="btn btn-inverse" href="{{url_for("days_floors_activity")}}">Floors</a>
+<a class="btn btn-inverse" href="{{url_for("days_distance_activity")}}">Miles</a>
+</div>
+
+<div>
 <script>
-var dailyStepsData = [
-          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
+var dailyFloorsData = [
+        {% for floor in floors_tuple %}
+          { x: {{floor[0]|safe}}, y: {{floor[1]|safe}} },
         {% endfor %}
     ];
 
-// var dailyStepsGoals = [
-//         {% for t in daily_goals_tuples %}
-//           { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
-//         {% endfor %}
+// var dailyStepsData = [
+//           { x: {{first_x|safe}}, y: {{steps|safe}} },
 //     ];
 
-var goals_graph = new Rickshaw.Graph( {
-  element: document.querySelector("#daily_steps_graph"),
+// var YesterdaySteps = [
+//           { x: {{second_x|safe}}, y: {{yesterdays_steps|safe}} },
+//     ];
+
+var daily_floors_graph = new Rickshaw.Graph( {
+  element: document.querySelector("#daily_floors_graph"),
   width: 700,
   height: 500,
   renderer: 'bar',
     series: [
         {
-            data: dailyStepsData,
+            data: dailyFloorsData,
             color: 'steelblue',
-            name: 'Activity'
+            name: "Floors"
         },
-        {
-    //         data: dailyStepsGoals,
-    //         color: 'lightblue',
-    //         name: 'Goals'
-    // } ]
+        // {
+        //      data: YesterdaySteps,
+        //      color: 'lightblue',
+        //      name:  "Steps_2"
+        // }
+             ]
 } );
 
 var format = function(n) {
@@ -144,37 +159,37 @@ var format = function(n) {
 }
 
 var x_ticks = new Rickshaw.Graph.Axis.X( {
-    graph: goals_graph,
+    graph: daily_floors_graph,
     orientation: 'bottom',
     element: document.getElementById('x_axis'),
     pixelsPerTick: 200,
     tickFormat: format
 } );
 
-// var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-//     graph: goals_graph,
-//     xFormatter: function(x) { return x },
-// } );
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+    graph: daily_floors_graph,
+    xFormatter: function(x) { return x },
+} );
 
 var yAxis = new Rickshaw.Graph.Axis.Y({
-    graph: goals_graph,
+    graph: daily_floors_graph,
     orientation: 'left',
     tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
     element: document.getElementById('y_axis')
 });
 
-var legend = new Rickshaw.Graph.Legend({
-    graph: goals_graph,
-    element: document.querySelector('#goals_graph')
-});
+// var legend = new Rickshaw.Graph.Legend({
+//     graph: goals_graph,
+//     element: document.querySelector('#goals_graph')
+// });
 
-var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
-    graph: goals_graph,
-    legend: legend
-});
+// var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+//     graph: goals_graph,
+//     legend: legend
+// });
 
 var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-    graph: goals_graph,
+    graph: daily_floors_graph,
     xFormatter: function(x) { return x },
 } );
 
@@ -183,8 +198,7 @@ var hoverDetail = new Rickshaw.Graph.HoverDetail( {
 //     legend: legend
 // });
 
-// goals_graph.renderer.unstack = true;
-goals_graph.render();
+daily_floors_graph.render();
 </script>
 </div>
 

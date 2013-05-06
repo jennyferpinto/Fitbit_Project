@@ -2,29 +2,67 @@
 
 {% block body %}
 
-<h1>Sign In</h1>
+<style>
+#title {
+  padding-bottom: 30px;
+  color: #778899;
+  text-align: center;
+  padding-right: 7px;
+}
 
+#submit_button {
+  text-align: center
+}
+
+.text_label {
+  padding-top: 5px;
+/*  text-align: center;*/
+  color: #2F4F4F;
+}
+
+#inner {
+  width: 50%;
+  margin: 0 auto;
+/*  text-align: center*/
+}
+
+#outer {
+  width: 100%;
+}
+
+.entire_box {
+  text-align: center;
+}
+</style>
+
+<div id="outer">
+<div id="inner">
+<dl class = "dl-horizontal">
 <form method = "POST" action = "/login" name = "login">
   {{form.hidden_tag()}}
 
-<p>
-  Email: <br>
-  {{form.email(size = 30)}}<br>
+<h2 id= "title">Sign In</h2>
+
+<p class="input_box">
+  <dt class="text_label"><b>Email</b></dt>
+  <dd>{{form.email(size = 30)}}<br><dd>
   {% for error in form.errors.email %}
   <span style = "color: red;">[{{error}}]</span>
   {% endfor %}<br>
 </p>
 
-<p>
-  Password: <br>
-  {{form.password(size = 30)}}<br>
+<p class="input_box">
+  <dt class="text_label"><b>Password</b></dt>
+  <dd>{{form.password(size = 30)}}<br></dd>
   {% for error in form.errors.password %}
   <span style = "color: red;">[{{error}}]</span>
   {% endfor %}<br>
 </p>
 
-<p><input type="submit" class="btn" value="Sign In"></input></p>
+<div id="submit_button"><input type="submit" class="btn" value="Sign In"></input></div>
 </form>
-
+</dl>
+</div>
+</div>
 {% endblock %}
 

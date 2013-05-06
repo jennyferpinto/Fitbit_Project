@@ -4,13 +4,29 @@
 
 <form method = "POST" action = "/patient_home" name = "patient"></form>
 
-<p> Welcome, {{name}} </p>
+<h2> Welcome, {{name}} </h2>
 
-<p> Start off with syncing your fitbit </p>
+<p><b>View Your Account Info Below</b></p>
 
-<a class="btn" href="{{url_for("fitbit_sync")}}">Sync</a>
+<div>
+<a class="btn btn-info" href="{{url_for("fitbit_sync")}}">Sync</a>
+</div>
+
+
+
+
+<div class="btn-group">
+<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action
+<span class="caret"></span></a>
+<ul class="dropdown-menu">
+    <!-- dropdown menu links -->
+</ul>
+<li><a href="/weekly_floors">Floors</a></li>
 <a class="btn" href="{{url_for("weekly_floors_chart")}}">Floors</a>
 <a class="btn" href="{{url_for("weekly_miles_chart")}}">Miles</a>
 <a class="btn" href="{{url_for("weekly_steps_chart")}}">Steps</a>
-<a class = "btn" href="{{url_for("days_goals")}}">Today</a>
+<a class = "btn" href="{{url_for("days_goals")}}">Goals</a>
+<a class = "btn" href="{{url_for("days_steps_activity")}}">Today's Activity</a>
+</div>
+
 {% endblock %}

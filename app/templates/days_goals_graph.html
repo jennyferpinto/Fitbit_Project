@@ -2,11 +2,11 @@
 
 {% block body %}
 
-<form method = "POST" action = "/days_goals" name = "day"></form>
+<form method = "POST" action = "/days_goals_graph" name = "day"></form>
 
 <style>
-/*#chart_container {
-    position: relative;
+#chart_container {
+    position: relative;  /* needed for position absolute to work later */
     padding-bottom: 10px;
 }
 
@@ -25,9 +25,10 @@
 #x_axis {
     position: relative;
     left: 40px;
+/*    height: 40px;*/
     bottom: 0px;
 }
-*/
+
 #stats_container {
     position: relative;
     float: right;
@@ -71,11 +72,14 @@
     float:right;
 }
 
-#progress_bars {
-    width: 500px;\
-}
 
 </style>
+
+<div id="back_button">
+<ul class="pager">
+  <li><a href="{{url_for("days_goals")}}">Back</a></li>
+</ul>
+</div>
 
 
 <div id = "stats_container">
@@ -104,78 +108,19 @@ Steps: {{steps}}/{{steps_goal}}</p>
 Distance: {{distance}}/{{distance_goal}}</p>
 </div>
 
-
 </div>
 
 
-<div id="progress_bars">
-    <div id="steps_progress">
-        <div class="progress">
-            <div class="bar"></div>
-        </div>
-    </div>
-</div>
 
-<div id="progress_bars">
-    <div id="floors_progress">
-        <div class="progress">
-            <div class="bar"></div>
-        </div>
-    </div>
-</div>
-
-<div id="progress_bars">
-    <div id="distance_progress">
-        <div class="progress">
-            <div class="bar"></div>
-        </div>
-    </div>
-</div>
-
-<!--
 <div id="chart_container">
     <div id="y_axis"></div>
     <div id = "goals_graph"></div>
     <div id = "x_axis"></div>
-</div> -->
-<div>
-
-<script>
-$(function() {
-    var actual_steps = {{steps|safe}};
-    var target_steps = {{steps_goal|safe}};
-    var steps_div = $("#steps_progress div.bar");
-    console.log(actual_steps/target_steps);
-    steps_div.width( actual_steps/target_steps*100 + "%");
-});
-
-</script>
-
-<script>
-$(function() {
-    var actual_floors = {{floors|safe}};
-    var target_floors = {{floors_goal|safe}};
-    var floors_div = $("#floors_progress div.bar");
-    console.log(actual_floors/target_floors);
-    floors_div.width(actual_floors/target_floors*100 + "%");
-});
-</script>
-
-<script>
-$(function() {
-    var actual_miles = {{distance|safe}};
-    var target_miles = {{distance_goal|safe}};
-    var miles_div = $("#distance_progress div.bar");
-    console.log(actual_miles/target_miles);
-    miles_div.width(actual_miles/target_miles*100 + "%");
-});
-</script>
-
-<div id="graph_link">
-<a class="btn btn-inverse" href="{{url_for("days_goals_graph")}}">Goals Graph</a>
 </div>
 
-{#
+<div>
+
+
 <script>
 var dailyStepsData = [
         {% for t in daily_activity_tuples %}
@@ -260,6 +205,5 @@ var hoverDetail = new Rickshaw.Graph.HoverDetail( {
 goals_graph.render();
 </script>
 </div>
-#}
 
 {% endblock %}

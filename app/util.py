@@ -21,7 +21,7 @@ def insert_activities(dictionary, user_id):
   # days = []
   # for i in range(7):
   #   days.append(today - timedelta(days=i))
-  # date = days[0]
+  # date = days[2]
   everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
                                      steps=total_steps,
@@ -36,6 +36,7 @@ def insert_activities(dictionary, user_id):
                                       date=date)
   return everything_updated
 
+
 def patients_weekly_steps(patient_id):
   start = date.today() - timedelta(days=7)
 
@@ -45,8 +46,8 @@ def patients_weekly_steps(patient_id):
             filter(Activity.date > start).\
             filter(Activity.date <= date.today()).\
             limit(7)
-
   return query.all()
+
 
 def patients_weekly_floors(patient_id):
   start = date.today() - timedelta(days=7)
@@ -57,8 +58,8 @@ def patients_weekly_floors(patient_id):
             filter(Activity.date > start).\
             filter(Activity.date <= date.today()).\
             limit(7)
-
   return query.all()
+
 
 def patients_weekly_miles(patient_id):
   start = date.today() - timedelta(days=7)
@@ -69,26 +70,31 @@ def patients_weekly_miles(patient_id):
             filter(Activity.date > start).\
             filter(Activity.date <= date.today()).\
             limit(7)
-
   return query.all()
+
 
 def day_view(patient_id):
   patients_day = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
   return patients_day
 
+
 def month_view(patient_id):
   pass
 
-# def yesterday_info(patient_id):
-#   start = date.today() - timedelta(days=1)
-#   print "++++++++++++++++++++++++++++++++++++++++++++"
-#   print start
-#   print "++++++++++++++++++++++++++++++++++++++++++++"
-#   query = model.session.query(Activity).\
-#             order_by(Activity.date.asc()).\
-#             filter(Activity.user_id == patient_id).\
-#             filter(Activity.date == start)
-#   return query
+def yesterday_info(patient_id):
+  start = date.today() - timedelta(days=1)
+  query = model.session.query(Activity).\
+            order_by(Activity.date.desc()).\
+            filter(Activity.user_id == patient_id).\
+            filter(Activity.date >= start).\
+            filter(Activity.date < date.today()).\
+            first()
+  print "++++++++++++++++++++++++++++++++++++++++++++"
+  print start
+  print query
+  print query.steps
+  print "++++++++++++++++++++++++++++++++++++++++++++"
+  return query
 
 def days_goals(patient_id):
   # date_today = date.today()

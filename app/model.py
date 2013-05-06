@@ -43,6 +43,9 @@ class Users(Base):
   activities = relationship("Activity", backref="users")
   goals = relationship("Goal", backref="users")
 
+  def __str__(self):
+    return "%s %s" % (self.first_name, self.last_name)
+
   def is_authenticated(self):
     return True
 

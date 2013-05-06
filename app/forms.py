@@ -1,4 +1,4 @@
-from flask.ext.wtf import Form, TextField, BooleanField, PasswordField, IntegerField, FloatField, DateField
+from flask.ext.wtf import Form, TextField, BooleanField, PasswordField, IntegerField, FloatField, DateField, SelectField, QuerySelectField
 from flask.ext.wtf import Required
 from wtforms import validators as v
 import model
@@ -18,9 +18,10 @@ class SignUpForm(Form):
                         validators=[Required()])
   last_name = TextField('last_name',
                         validators=[Required()])
-  role = TextField('role',
-                  validators=[Required()])
-  therapist_name = TextField('therapist_name')
+  role = SelectField('role',
+                  validators=[Required()],
+                  choices=[('therapist', 'Therapist'), ('patient', 'Patient')])
+  # therapist_name = TextField('therapist_name')
   email = TextField('first_email',
                     validators=[Required(),
                     v.Email(),
@@ -32,6 +33,7 @@ class SignUpForm(Form):
                           v.EqualTo('confirm_password',
                           message = 'Passwords must match')])
   confirm_password = PasswordField('Repeat Password')
+  therapist = QuerySelectField(query_factory=model.session.query(model.Users).filter(model.Users.role == 'therapist').all)
 
 
 class GoalsForm(Form):
