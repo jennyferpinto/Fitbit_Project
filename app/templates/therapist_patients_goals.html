@@ -1,0 +1,177 @@
+{% extends "base_therapist.html" %}
+
+{% block body %}
+
+<form method = "POST" action = "/therapist_patients_goals" name = "day"></form>
+
+<style>
+
+#floors_img {
+    position: relative;
+    float: left;
+    padding-right: 30px;
+    padding-top: 12px;
+}
+
+#floors_info {
+    position: relative;
+/*    float: right;*/
+}
+
+#footprints_img {
+    position: relative;
+    float:left;
+    padding-right: 30px;
+    padding-top: 3px;
+}
+
+#steps_info {
+    position: relative;
+/*    float:right;*/
+}
+
+#map_img {
+    position: relative;
+    float:left;
+    padding-right: 30px;
+    padding-top: 15px;
+}
+
+#distance_info {
+    position: relative;
+/*    float:right;*/
+}
+
+#progress_bars {
+    width: 500px;\
+}
+
+#title {
+    color: #778899;
+/*    padding-left: 30px;*/
+}
+
+.progress_label {
+  padding-top: 5px;
+/*  text-align: center;*/
+  color: #2F4F4F;
+}
+
+#inner {
+/*  width: 50%;
+  margin: 0 auto;*/
+  text-align: center;
+/*  padding-right: 0px;*/
+}
+
+#outer {
+  width: 100%;
+}
+
+</style>
+
+<div id="outer">
+<div id="inner">
+<div id="title">
+<h2 id="title"> Goals Progress<h2>
+</div>
+
+<div id="steps">
+<div id = "footprints_img">
+<img class="footprints" src="/static/images/footprints.png" height= "50" width= "50">
+</div>
+    <div id="progress_bars">
+    <p class="progress_label"><b>Steps</b></p>
+    <div id="steps_progress">
+
+        <div id = "steps_info">
+        <p><b>{{steps}} out of {{steps_goal}} steps taken</b></p>
+        </div>
+
+        <div class="progress progress-info">
+        <div class="bar"></div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div id="floors">
+<div id = "floors_img">
+<img class="stairs" src="/static/images/stairs.png" height= "50" width= "50">
+</div>
+    <div id="progress_bars">
+    <p class="progress_label"><b>Floors</b></p>
+    <div id="floors_progress">
+
+        <div id = "floors_info">
+        <p><b>{{floors}} out of {{floors_goal}} floors climbed</b></p>
+        </div>
+
+        <div class="progress progress-info">
+        <div class="bar"></div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div id="distance">
+<div id = "map_img">
+<img class="map" src="/static/images/map_pin.png" height= "50" width= "50">
+</div>
+    <div id="progress_bars">
+    <p class="progress_label"><b>Distance</b></p>
+    <div id="distance_progress">
+
+        <div id = "distance_info">
+        <p><b>{{distance}} out of {{distance_goal}} miles walked</b></p>
+        </div>
+
+        <div class="progress progress-info">
+        <div class="bar"></div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div>
+<script>
+$(function() {
+    var actual_steps = {{steps|safe}};
+    var target_steps = {{steps_goal|safe}};
+    var steps_div = $("#steps_progress div.bar");
+    console.log(actual_steps/target_steps);
+    steps_div.width( actual_steps/target_steps*100 + "%");
+});
+
+</script>
+
+<script>
+$(function() {
+    var actual_floors = {{floors|safe}};
+    var target_floors = {{floors_goal|safe}};
+    var floors_div = $("#floors_progress div.bar");
+    console.log(actual_floors/target_floors);
+    floors_div.width(actual_floors/target_floors*100 + "%");
+});
+</script>
+
+<script>
+$(function() {
+    var actual_miles = {{distance|safe}};
+    var target_miles = {{distance_goal|safe}};
+    var miles_div = $("#distance_progress div.bar");
+    console.log(actual_miles/target_miles);
+    miles_div.width(actual_miles/target_miles*100 + "%");
+});
+</script>
+
+<div id="graph_link">
+<a class="btn btn-inverse" href="{{url_for("set_goals")}}">Set Goals</a>
+</div>
+</div>
+</div>
+
+{% endblock %}

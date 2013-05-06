@@ -2,21 +2,59 @@
 
 {% block body %}
 
+<style>
+
+#title {
+  padding-top: 20px;
+  color: #778899;
+  padding-bottom: 20px;
+}
+
+#subtitle {
+  color: #2F4F4F;
+}
+
+#goals_progress {
+  padding-bottom: 20px;
+}
+
+#set_goals {
+padding-bottom: 20px;
+}
+
+#inner {
+  margin: 0 auto;
+  text-align: center;
+}
+
+</style>
+
+
 <form method = "POST" action = "/therapists_patient_view" name = "Patients Home Page">
 
-<h1>{{name}}'s Account Info</h1>
+<div id="outer">
+<div id="inner">
 
-<h3>Insert patient's info here</h3>
+<h2 id="title">{{name}}'s Account Info</h2>
+
+<div id= "set_goals"><a class="btn btn-success" href="{{url_for("set_goals")}}?patient_id={{patient_id}}">Set Goals</a></div>
+
+<div id="goals_progress"><a class="btn btn-info" href="{{url_for("therapist_patients_goals")}}?patient_id={{patient_id}}">Goals Progress</a></div>
 
 
-<a class="btn btn-success" href="{{url_for("set_goals")}}?patient_id={{patient_id}}">Set Goals</a>
+<div id="first_drop">
+<div class="btn-group">
+<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Weekly Account Activity
+<span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="{{url_for("therapist_weekly_floors")}}">Floors</a></li>
+<li><a href="{{url_for("therapist_weekly_miles")}}">Miles</a></li>
+<li><a href="{{url_for("therapist_weekly_steps")}}">Steps</a></li>
+</ul>
+</div>
+</div>
 
-<a class="btn" href="{{url_for("therapist_patients_daily")}}?patient_id={{patient_id}}">Daily Graph</a>
-
-<a class="btn" href="{{url_for("therapist_weekly_steps")}}?patient_id={{patient_id}}">Week's Steps</a>
-
-<a class="btn" href="{{url_for("therapist_weekly_floors")}}?patient_id={{patient_id}}">Week's Floors</a>
-
-<a class="btn" href="{{url_for("therapist_weekly_miles")}}?patient_id={{patient_id}}">Week's Miles</a>
+</div>
+</div>
 
 {% endblock %}

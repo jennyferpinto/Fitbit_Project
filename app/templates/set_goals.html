@@ -2,44 +2,81 @@
 
 {% block body %}
 
-<h1>Set Goals for {{name}}</h1>
+<style>
+#title {
+  padding-bottom: 30px;
+  color: #778899;
+  text-align: center;
+/*  margin: 0 auto;*/
+}
+
+#submit_button {
+  text-align: center
+}
+
+.input_box {
+  padding-bottom: 0px;
+/*  text-align: center;*/
+
+}
+
+#inner {
+  text-align: center
+}
+
+#outer {
+  width: 100%;
+}
+</style>
+
+<div id="outer">
+<div id="inner">
+<dl class = "dl-horizontal">
 
 <form method = "POST" action = "/set_goals" name = "goal_page">
   {{form.hidden_tag()}}
 
-<p>
-  Steps: <br>
+<h2 id="title">Set Goals for {{name}}</h2>
+
+<p class="input_box">
+  <b>Steps</b><br>
   {{form.steps(size = 30)}}<br>
   {% for error in form.errors.steps %}
   <span style = "color: red;">[{{error}}]</span>
   {% endfor %}<br>
 </p>
 
-<p>
-  Floors: <br>
+<p class="input_box">
+  <b>Floors</b><br>
   {{form.floors(size = 30)}}<br>
   {% for error in form.errors.floors %}
   <span style = "color: red;">[{{error}}]</span>
   {% endfor %}<br>
 </p>
 
-<p>
-  Distance: <br>
+<p class="input_box">
+  <b>Distance</b><br>
   {{form.distance(size = 30)}}<br>
   {% for error in form.errors.distance %}
   <span style = "color: red;">[{{error}}]</span>
   {% endfor %}<br>
 </p>
 
-<p>
-  Date: <br>
+<p class="input_box">
+  <b>Date</b><br>
   {{form.date(size = 30)}}<br>
   {% for error in form.errors.date %}
   <span style = "color: red;">[{{errors}}]</span>
   {% endfor %}
 </p>
 
-<p><input type="submit" class="btn" value="Submit"></input></p>
+<div id = "submit_button"><button type="submit" class="btn">Submit</button></div>
+
+<!-- <p><input type="submit" class="btn" value="Submit"></input></p> -->
 </form>
+
+</dl>
+</div>
+</div>
 
 {% endblock %}

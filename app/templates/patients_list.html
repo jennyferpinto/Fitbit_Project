@@ -5,40 +5,52 @@
 <style>
 
 #title_text {
-  padding-bottom: 30px;
+  padding-bottom: 20px;
   color: #778899;
 }
 
 #inner {
-  width: 50%;
-  margin: 0 auto;
-/*  text-align: center*/
+  text-align: center;
 }
 
 #outer {
-  width: 100%;
+  /*border: 1px solid red;*/
 }
 
 #button {
-  padding-left: 150px;
+  padding-bottom: 20px;
 }
 
-#patient_button {
+#patient {
   padding-bottom: 20px;
 }
 
 </style>
 
+<div id="outer">
+  <div id="inner">
 
-<h2 id="title_text"> Patients </h2>
+  <h2 id="title_text"> Patients </h2>
 
-{% for patients in patients_list %}
-
-  {{patients.first_name}}
-
-  <div id = "patient_button">
-  <a class="btn" href="{{url_for("therapists_patient_view")}}?patient_id={{patients.id}}">Info</a><br>
+  <div id="patients_list">
+    {% for patients in patients_list %}
+  <div id="patient"><a class="btn btn-info" href="{{url_for("therapists_patient_view")}}?patient_id={{patients.id}}">{{patients.first_name}}</a><br>
   </div>
+  {% endfor %}
+  </div>
+
+  </div>
+</div>
+
+<!-- {% for patients in patients_list %}
+<div class="btn-group">
+<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">{{patients.first_name}}
+<span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="{{url_for("therapists_patient_view")}}?patient_id={{patients.id}}">Info</a></li>
+</ul><br>
 {% endfor %}
+</div>
+</div> -->
 
 {% endblock %}

@@ -7,31 +7,33 @@
 
 #greeting {
   padding-bottom: 20px;
+  color: #778899;
+  text-align: center;
+  padding-right: 30px;
 }
 
 #inner {
   width: 50%;
-  margin: 50px;
+  margin: 0 auto;
+  padding-right: 60px;
 }
 
 #outer {
   width: 100%;
 }
 
-#sync {
-  padding-bottom: 20px;
-}
-
-#sync_title{
-  float:left;
-}
-
 #sync_button {
-  float:right;
+  float:left;
+  padding-top: 5px;
+  padding-right: 20px;
 }
 
 #menus {
   padding-top: 40px;
+}
+
+#second_drop {
+  float: right;
 }
 </style>
 
@@ -42,16 +44,12 @@
 
 <h2 id="greeting"> Hi {{name}}! </h2>
 
-<div id="sync">
-<div id="sync_title"><p>Sync Your Fitbit Here</p></div>
+<div id = "homepage">
+
 <div id="sync_button">
-<a class="btn btn-info" href="{{url_for("fitbit_sync")}}">Sync</a>
-</div>
+<a class="btn btn-info" href="{{url_for("fitbit_sync")}}">Sync Your Fitbit Here</a>
 </div>
 
-
-<div id= "menus">
-<div id="first_drop">
 <div class="btn-group">
 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Weekly Account Activity
 <span class="caret"></span></a>
@@ -61,9 +59,7 @@
 <li><a href="{{url_for("weekly_steps_chart")}}">Steps</a></li>
 </ul>
 </div>
-</div>
 
-<div id="second_drop">
 <div class="btn-group">
 <a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">Daily Activity
 <span class="caret"></span></a>
@@ -74,10 +70,7 @@
 <li><a href="{{url_for("days_distance_activity")}}">Miles</a></li>
 </ul>
 </div>
-</div>
-</div>
 
-</div>
 </div>
 
 {% endblock %}

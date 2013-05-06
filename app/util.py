@@ -21,7 +21,7 @@ def insert_activities(dictionary, user_id):
   # days = []
   # for i in range(7):
   #   days.append(today - timedelta(days=i))
-  # date = days[2]
+  # date = days[1]
   everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
                                      steps=total_steps,
@@ -38,8 +38,8 @@ def insert_activities(dictionary, user_id):
 
 
 def patients_weekly_steps(patient_id):
-  start = date.today() - timedelta(days=7)
-
+  start = date.today() - timedelta(days=8)
+  print date.today()
   query = model.session.query(Activity).\
             order_by(Activity.date.asc()).\
             filter(Activity.user_id == patient_id).\
@@ -50,7 +50,7 @@ def patients_weekly_steps(patient_id):
 
 
 def patients_weekly_floors(patient_id):
-  start = date.today() - timedelta(days=7)
+  start = date.today() - timedelta(days=8)
 
   query = model.session.query(Activity).\
             order_by(Activity.date.asc()).\
@@ -62,7 +62,7 @@ def patients_weekly_floors(patient_id):
 
 
 def patients_weekly_miles(patient_id):
-  start = date.today() - timedelta(days=7)
+  start = date.today() - timedelta(days=8)
 
   query = model.session.query(Activity).\
             order_by(Activity.date.asc()).\
@@ -97,12 +97,6 @@ def yesterday_info(patient_id):
   return query
 
 def days_goals(patient_id):
-  # date_today = date.today()
-  # modified_date = date_today.strftime('%Y-%m-%d')
-  # print "********************************************************"
-  # print date_today
-  # print "********************************************************"
-  # days_goals = model.session.query(Goal).order_by(Activity.date.asc()).filter(Goal.user_id == patient_id).filter(Goal.date == date_today).first()
   days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == patient_id).first()
   return days_goals
 

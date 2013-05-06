@@ -51,7 +51,7 @@ def login():
       user.last_login = datetime.datetime.utcnow()
       user.number_logins += 1
       model.session.commit()
-      flash("logged in successfully")
+      # flash("logged in successfully")
       if current_user.role == "patient":
         return redirect(url_for("patient_home"))
       else:
@@ -160,7 +160,7 @@ def fitbit_sync():
                        user_key="5fec83e8ad9ea52dd63b47a42b87b852",
                        user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
   # if user.activities(left blank) then it will get the most recent activity for that user
-  user_info = user.activities('2013-01-06')
+  user_info = user.activities()
   # uses the current_user function from flask-login to get the id of the user who is logged in
   user_id = current_user.id
   # modified the insert_activities function from util.py to take two arguments
@@ -234,11 +234,13 @@ def patient_home():
                         name = name)
 
 
-@app.route('/therapist_patients_daily', methods = ["POST", "GET"])
+
+@app.route('/therapist_patients_goals', methods = ["POST", "GET"])
 @login_required
-def therapist_patients_daily():
+def therapist_patients_goals():
   patient_id = session.get('patient')
-  name = current_user.first_name
+  # current_user_id = current_user.id
+  # name = current_user.first_name
   days_activity = util.days_activity(patient_id)
   steps = days_activity.steps
   floors = days_activity.floors
@@ -261,8 +263,13 @@ def therapist_patients_daily():
     stripped_goal_date = goal_date[:10]
     goals_list = [steps_goal, floors_goal, distance_goal]
     daily_goals_tuples = zip(x_list, goals_list)
-  else: flash("No goals set")
-  return render_template("therapist_patients_daily.html",
+  else:
+    steps_goal = 0
+    floors_goal = 0
+    distance_goal = 0
+    stripped_goal_date = "No Goals Set For Today"
+    flash("No goals set")
+  return render_template("therapist_patients_goals.html",
                         floors=floors,
                         steps=steps,
                         distance=distance,
@@ -275,6 +282,51 @@ def therapist_patients_daily():
                         daily_goals_tuples=daily_goals_tuples,
                         daily_activity_tuples=daily_activity_tuples,
                         format_tuples=format_tuples)
+
+
+
+
+# @app.route('/therapist_patients_daily', methods = ["POST", "GET"])
+# @login_required
+# def therapist_patients_daily():
+#   patient_id = session.get('patient')
+#   name = current_user.first_name
+#   days_activity = util.days_activity(patient_id)
+#   steps = days_activity.steps
+#   floors = days_activity.floors
+#   distance = days_activity.distance
+#   time_object = days_activity.date
+#   string_time = str(days_activity.date)
+#   stripped_time = string_time[:11]
+#   days_list = [steps, floors, distance]
+#   x_list = [0,1,2]
+#   daily_activity_tuples = zip(x_list, days_list)
+#   bars = ['Steps', 'Floors', 'Miles']
+#   format_tuples = zip(x_list,bars)
+#   daily_goals = util.days_goals(patient_id)
+#   if daily_goals is not None:
+#     steps_goal = daily_goals.step_goal
+#     floors_goal = daily_goals.floors_goal
+#     distance_goal = daily_goals.distance_goal
+#     time_goal_set = daily_goals.date
+#     goal_date = str(time_goal_set)
+#     stripped_goal_date = goal_date[:10]
+#     goals_list = [steps_goal, floors_goal, distance_goal]
+#     daily_goals_tuples = zip(x_list, goals_list)
+#   else: flash("No goals set")
+#   return render_template("therapist_patients_daily.html",
+#                         floors=floors,
+#                         steps=steps,
+#                         distance=distance,
+#                         stripped_time=stripped_time,
+#                         floors_goal=floors_goal,
+#                         steps_goal=steps_goal,
+#                         distance_goal=distance_goal,
+#                         time_object=time_object,
+#                         stripped_goal_data=stripped_goal_date,
+#                         daily_goals_tuples=daily_goals_tuples,
+#                         daily_activity_tuples=daily_activity_tuples,
+#                         format_tuples=format_tuples)
 
 
 @app.route('/days_goals_graph', methods = ["POST", "GET"])
