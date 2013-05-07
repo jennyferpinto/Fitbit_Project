@@ -2,10 +2,6 @@
 
 {% block body %}
 
-<form method = "POST" action = "/weekly_floors" name = "patients"></form>
-
-<h2> Floors Climbed This Week </h2>
-
 <style>
 #chart_container {
     position: relative;  /* needed for position absolute to work later */
@@ -37,8 +33,19 @@
     left:250px;
     top:20px;
 }
+
+#title {
+  color: #778899;
+  padding-left: 160px;
+}
 </style>
 
+<div id="outer">
+<div id="inner">
+
+<form method = "POST" action = "/weekly_floors" name = "patients"></form>
+
+<h2 id="title"> Floors Climbed This Week </h2>
 
 <div id="chart_container">
     <div id="y_axis"></div>
@@ -117,6 +124,9 @@ var hoverDetail = new Rickshaw.Graph.HoverDetail( {
     // xAxis.render();
     graph2.render();
 </script>
+</div>
+
+</div>
 </div>
 
 {% endblock %}

@@ -30,62 +30,56 @@
 
 #stats_container {
     position: relative;
+    padding-bottom: 10px;
     float: right;
-    left: -150px;
-    bottom: -170px;
+    left: -80px;
+    padding-top: 40px;
 }
 
-#floors_img {
+#floors {
     position: relative;
-/*    float: left;*/
-/*    padding: 10px;*/
-    right: 70px;
+    padding-bottom: 10px;
 }
 
-#floors_info {
+#footprints {
     position: relative;
-    float: right;
+    padding-bottom: 10px;
 }
 
-#footprints_img {
+#map {
     position: relative;
-/*    float: left;*/
-/*    padding:10px;*/
-    right: 70px;
-}
-
-#steps_info {
-    position: relative;
-    float:right;
-}
-
-#map_img {
-    position: relative;
-/*    float: left;*/
-/*    padding: 10px;*/
-    right: 70px;
-}
-
-#distance_info {
-    position: relative;
-    float:right;
+    padding-bottom: 10px;
 }
 
 .btn-group {
     position: relative;
     left:250px;
-    top:20px;
+    bottom: 20px;
 }
 
 #info_title {
   padding-bottom: 30px;
   color: #778899;
+  padding-right: 10px;
 }
 
 .text_label {
-  padding-top: 5px;
-/*  text-align: center;*/
   color: #2F4F4F;
+}
+
+#floors_img {
+    padding-right: 20px;
+    padding-bottom: 7px;
+}
+
+#map_img {
+    padding-right: 20px;
+    padding-bottom: 7px;
+}
+
+#footprints_img {
+    padding-right: 20px;
+    padding-bottom: 7px;
 }
 
 </style>
@@ -93,30 +87,21 @@
 
 <div id = "stats_container">
 
-<h3 id="info_title">Today's Activity</h3>
+<div id= "info_title"><h3>Today's Activity</h3></div>
 
-<div id = "floors_img">
-<img class="stairs" src="/static/images/stairs.png" height= "50" width= "50">
-</div>
-<div class = "text_label" id = "floors_info">
-{{floors}} <b>Floors</b>
+<div id = "floors">
+<img id="floors_img" src="/static/images/stairs.png" height= "50" width= "50">{{floors}} <b>Floors</b>
 </div>
 
 
-<div id = "footprints_img">
-<img class="footprints" src="/static/images/footprints.png" height= "50" width= "50">
-</div>
-<div class = "text_label" id = "steps_info">
-{{steps}} <b>Steps</b>
+<div id = "footprints">
+<img  id="footprints_img" src="/static/images/footprints.png" height= "50" width= "50">{{steps}} <b>Steps</b>
 </div>
 
+<div id = "map">
+<img id="map_img" src="/static/images/map_pin.png" height= "50" width= "50">{{distance}} mi. <b>Distance</b>
+</div>
 
-<div id = "map_img">
-<img class="map" src="/static/images/map_pin.png" height= "50" width= "50">
-</div>
-<div class = "text_label" id = "distance_info">
-{{distance}} <b>Distance</b>
-</div>
 </div>
 
 <div id="chart_container">
@@ -126,9 +111,9 @@
 </div>
 
 <div class="btn-group">
-<a class="btn btn-inverse" href="{{url_for("days_steps_activity")}}">Steps</a>
-<a class="btn btn-inverse" href="{{url_for("days_floors_activity")}}">Floors</a>
-<a class="btn btn-inverse" href="{{url_for("days_distance_activity")}}">Miles</a>
+<a class="btn" href="{{url_for("days_steps_activity")}}">Steps</a>
+<a class="btn" href="{{url_for("days_floors_activity")}}">Floors</a>
+<a class="btn" href="{{url_for("days_distance_activity")}}">Miles</a>
 </div>
 
 <script>

@@ -19,9 +19,9 @@ def insert_activities(dictionary, user_id):
   date = datetime.utcnow()
   # today = datetime.today()
   # days = []
-  # for i in range(7):
+  # for i in range(8):
   #   days.append(today - timedelta(days=i))
-  # date = days[1]
+  # date = days[7]
   everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
                                      steps=total_steps,
@@ -89,15 +89,10 @@ def yesterday_info(patient_id):
             filter(Activity.date >= start).\
             filter(Activity.date < date.today()).\
             first()
-  print "++++++++++++++++++++++++++++++++++++++++++++"
-  print start
-  print query
-  print query.steps
-  print "++++++++++++++++++++++++++++++++++++++++++++"
   return query
 
 def days_goals(patient_id):
-  days_goals = model.session.query(Goal).order_by(Goal.date.desc()).filter(Goal.user_id == patient_id).first()
+  days_goals = model.session.query(Goal).order_by(Goal.id.desc()).filter(Goal.user_id == patient_id).first()
   return days_goals
 
 def days_activity(patient_id):

@@ -42,7 +42,7 @@
 
 <form method = "POST" action = "/patient_home" name = "patient"></form>
 
-<h2 id="greeting"> Hi {{name}}! </h2>
+<h1 id="greeting"> Hi {{name}}! </h1>
 
 <div id = "homepage">
 
@@ -64,10 +64,10 @@
 <a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">Daily Activity
 <span class="caret"></span></a>
 <ul class="dropdown-menu">
-<li><a href="{{url_for("days_goals")}}">Goals</a></li>
 <li><a href="{{url_for("days_steps_activity")}}">Steps</a></li>
 <li><a href="{{url_for("days_floors_activity")}}">Floors</a></li>
 <li><a href="{{url_for("days_distance_activity")}}">Miles</a></li>
+<li><a href="{{url_for("days_goals")}}">Goals Progress</a></li>
 </ul>
 </div>
 

@@ -139,26 +139,24 @@ def oauth_complete():
   user.user_key = token.key
   model.session.add(user)
   model.session.commit()
-  flash("Congrats!")
-  return redirect(url_for("/home"))
+  flash("Congrats! You've authorized your Fitbit!")
+  return redirect(url_for("home"))
 
 @app.route('/sync_fitbit', methods = ["GET"])
 @login_required
 def fitbit_sync():
   user_account = model.session.query(Users).filter(Users.id == current_user.id).one()
   user_secret = user_account.user_secret
-  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  print user_secret
-  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   user_key = user_account.user_key
-  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  print user_key
-  print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   # hard coded me as user so that I can retrieve my data
   user = fitbit.Fitbit('c91f84cd10f04cebad9beb7d4812eb90',
                        'e2b38ed6dad443e8bad8efbe3e0e3da5',
                        user_key="5fec83e8ad9ea52dd63b47a42b87b852",
                        user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
+  # user = fitbit.Fitbit('c91f84cd10f04cebad9beb7d4812eb90',
+  #                      'e2b38ed6dad443e8bad8efbe3e0e3da5',
+  #                      user_key="5fec83e8ad9ea52dd63b47a42b87b852",
+  #                      user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
   # if user.activities(left blank) then it will get the most recent activity for that user
   user_info = user.activities()
   # uses the current_user function from flask-login to get the id of the user who is logged in
@@ -234,7 +232,6 @@ def patient_home():
                         name = name)
 
 
-
 @app.route('/therapist_patients_goals', methods = ["POST", "GET"])
 @login_required
 def therapist_patients_goals():
@@ -282,51 +279,6 @@ def therapist_patients_goals():
                         daily_goals_tuples=daily_goals_tuples,
                         daily_activity_tuples=daily_activity_tuples,
                         format_tuples=format_tuples)
-
-
-
-
-# @app.route('/therapist_patients_daily', methods = ["POST", "GET"])
-# @login_required
-# def therapist_patients_daily():
-#   patient_id = session.get('patient')
-#   name = current_user.first_name
-#   days_activity = util.days_activity(patient_id)
-#   steps = days_activity.steps
-#   floors = days_activity.floors
-#   distance = days_activity.distance
-#   time_object = days_activity.date
-#   string_time = str(days_activity.date)
-#   stripped_time = string_time[:11]
-#   days_list = [steps, floors, distance]
-#   x_list = [0,1,2]
-#   daily_activity_tuples = zip(x_list, days_list)
-#   bars = ['Steps', 'Floors', 'Miles']
-#   format_tuples = zip(x_list,bars)
-#   daily_goals = util.days_goals(patient_id)
-#   if daily_goals is not None:
-#     steps_goal = daily_goals.step_goal
-#     floors_goal = daily_goals.floors_goal
-#     distance_goal = daily_goals.distance_goal
-#     time_goal_set = daily_goals.date
-#     goal_date = str(time_goal_set)
-#     stripped_goal_date = goal_date[:10]
-#     goals_list = [steps_goal, floors_goal, distance_goal]
-#     daily_goals_tuples = zip(x_list, goals_list)
-#   else: flash("No goals set")
-#   return render_template("therapist_patients_daily.html",
-#                         floors=floors,
-#                         steps=steps,
-#                         distance=distance,
-#                         stripped_time=stripped_time,
-#                         floors_goal=floors_goal,
-#                         steps_goal=steps_goal,
-#                         distance_goal=distance_goal,
-#                         time_object=time_object,
-#                         stripped_goal_data=stripped_goal_date,
-#                         daily_goals_tuples=daily_goals_tuples,
-#                         daily_activity_tuples=daily_activity_tuples,
-#                         format_tuples=format_tuples)
 
 
 @app.route('/days_goals_graph', methods = ["POST", "GET"])
