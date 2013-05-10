@@ -1,0 +1,26 @@
+{% extends "base_patient.html" %}
+
+{% block body %}
+
+<style>
+
+#inner {
+    text-align: center;
+}
+
+</style>
+
+
+<div id="outer">
+<div id="inner">
+
+<h2> Sign Up Below! </h2>
+
+<p> Click the buttons below for therapist or patient sign up </p>
+
+<a class="btn btn-inverse" href="{{url_for("therapist_form")}}">Therapist</a>
+<a class="btn btn-inverse" href="{{url_for("patient_form")}}">Patient</a>
+</div>
+</div>
+
+{% endblock %}

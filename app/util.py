@@ -21,7 +21,7 @@ def insert_activities(dictionary, user_id):
   # days = []
   # for i in range(8):
   #   days.append(today - timedelta(days=i))
-  # date = days[7]
+  # date = days[0]
   everything_updated = model.Activity(id=None, user_id=user_id,
                                       floors=total_floors,
                                      steps=total_steps,

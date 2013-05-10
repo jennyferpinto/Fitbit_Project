@@ -93,11 +93,5 @@ class Activity(Base):
   distance = Column(Float, nullable = True)
   date = Column(DateTime, nullable = True)
 
-# class Goal(Base):
-#   __tablename__ = "goals"
-#   id = Column(Integer, primary_key = True)
-#   user_id = Column(Integer, ForeignKey('users.id'))
-
-
 # if __name__ == "__main__":
 #   main()

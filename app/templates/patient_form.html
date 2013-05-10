@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block body %}
+
+<style>
+#title {
+  padding-bottom: 30px;
+  color: #778899;
+  text-align: center;
+  padding-right: 120px;
+/*  margin: 0 auto;*/
+}
+
+#submit_button {
+  text-align: center
+}
+
+.input_box {
+  padding: 0px;
+/*  text-align: center;*/
+
+}
+
+.text_label {
+  padding-top: 5px;
+/*  text-align: center;*/
+  color: #2F4F4F;
+}
+
+#inner {
+  width: 50%;
+  margin: 0 auto;
+/*  text-align: center*/
+}
+
+#outer {
+  width: 100%;
+}
+
+</style>
+
+<div id="outer">
+<div id="inner">
+<dl class = "dl-horizontal">
+<form class = "signup" method = "POST" action = "/signup_patient" name = "form_page">
+  {{form.hidden_tag()}}
+
+<h2 id="title">Create Your Account</h2>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>First Name</b></dt>
+  <dd>{{form.first_name(size = 30)}}<br></dd>
+  {% for error in form.errors.first_name %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>Last Name</b></dt>
+  <dd>{{form.last_name(size = 30)}}<br></dd>
+  {% for error in form.errors.last_name %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>Role</b></dt>
+  <dd>{{form.role}}<br></dd>
+  {% for error in form.errors.last_name %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>Therapist Name</b></dt>
+  <dd>{{form.therapist}}<br></dd>
+  {% for error in form.errors.therapist_name %}
+  <span style = "color: read;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>Email</b></dt>
+  <dd>{{form.email(size = 30)}}<br></dd>
+  {% for error in form.errors.email %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>Confirm Email</b></dt>
+  <dd>{{form.confirm_email(size = 30)}}<br></dd>
+  {% for error in form.errors.confirm_email %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>Password</b></dt>
+  <dd>{{form.password(size = 30)}}<br></dd>
+  {% for error in form.errors.password %}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<p class = "input_box">
+  <dt class = "text_label"><b>Confirm Password</b></dt>
+  <dd>{{form.confirm_password(size = 30)}}<br></dd>
+  {% for error in form.errors.confirm_password%}
+  <span style = "color: red;">[{{error}}]</span>
+  {% endfor %}<br>
+</p>
+
+<div id = "submit_button"><button type="submit" class="btn">Submit</button></div>
+</form>
+</dl>
+</div>
+</div>
+{% endblock %}

@@ -13,7 +13,29 @@ class LoginForm(Form):
   # remember_me = BooleanField('remember_me', default = False)
 
 
-class SignUpForm(Form):
+class SignUpTherapistForm(Form):
+  first_name = TextField('first_name',
+                        validators=[Required()])
+  last_name = TextField('last_name',
+                        validators=[Required()])
+  role = SelectField('role',
+                  validators=[Required()],
+                  choices=[('therapist', 'Therapist'), ('patient', 'Patient')])
+  # therapist_name = TextField('therapist_name')
+  email = TextField('first_email',
+                    validators=[Required(),
+                    v.Email(),
+                    v.EqualTo('confirm_email',
+                    message = "Emails have to match")])
+  confirm_email = TextField('Repeat Email')
+  password = PasswordField('first_password',
+                          validators = [Required(),
+                          v.EqualTo('confirm_password',
+                          message = 'Passwords must match')])
+  confirm_password = PasswordField('Repeat Password')
+
+
+class SignUpPatientForm(Form):
   first_name = TextField('first_name',
                         validators=[Required()])
   last_name = TextField('last_name',
@@ -45,11 +67,3 @@ class GoalsForm(Form):
                       validators=[Required()])
   date = DateField('date',
                   validators=[Required()])
-
-
-
-
-# class DateForm(Form):
-#   Date = TextField('date',
-#                   validators=[Required(),
-#                   ])

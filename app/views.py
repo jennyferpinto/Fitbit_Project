@@ -2,7 +2,7 @@ from app import app
 from flask import Flask, render_template, redirect, request, session, g
 from flask import request, g, flash, url_for
 from flask.ext.login import login_user, logout_user, login_required
-from forms import LoginForm, SignUpForm, GoalsForm
+from forms import LoginForm, SignUpTherapistForm, GoalsForm, SignUpPatientForm
 import model
 from flask.ext.login import LoginManager, current_user
 from model import Users, Activity, Goal
@@ -61,6 +61,7 @@ def login():
       return redirect(url_for("login"))
   return render_template("login.html", title="Sign In", form=form)
 
+
 @app.route("/logout")
 @login_required
 def logout():
@@ -68,10 +69,16 @@ def logout():
   flash("You are now logged out")
   return redirect(url_for("home"))
 
-@app.route('/signup', methods = ["POST","GET"])
-def form():
+
+@app.route('/signup', methods=["POST","GET"])
+def base_form():
+  return render_template("base_form.html", title="Sign Up!")
+
+
+@app.route('/signup_therapist', methods = ["POST","GET"])
+def therapist_form():
   #insert role into the sign up form, to differentiate btwn patients/therapists
-  form = SignUpForm()
+  form = SignUpTherapistForm()
   if form.validate_on_submit():
     # queries for the email submitted in the signup form
     user = model.session.query(Users).filter(Users.email == form.email.data).first()
@@ -80,14 +87,48 @@ def form():
       user_email = user.email
       if user_email == form.email.data:
         flash ("email already exists")
-        return redirect(url_for("form"))
+        return redirect(url_for("therapist_form"))
     # if it is actually a new user then it pulls wtf forms data and assigns it to variables
     if user == None:
       first_name = form.first_name.data
       last_name = form.last_name.data
       role = form.role.data
-      if role == 'therapist':
-        therapist = None
+      email = form.email.data
+      password = form.password.data
+      pw_hash = bcrypt.generate_password_hash(password)
+      number_logins = 0
+      new_user = model.Users(id = None,
+                            email=email,
+                            password=pw_hash,
+                            first_name=first_name,
+                            last_name=last_name,
+                            role=role,
+                            number_logins=number_logins)
+      model.session.add(new_user)
+      model.session.commit()
+      flash("Account Creation successful, Login to your account")
+      return redirect(url_for("home"))
+  return render_template("therapist_form.html", title="Sign Up Form", form=form)
+
+
+@app.route('/signup_patient', methods = ["POST","GET"])
+def patient_form():
+  #insert role into the sign up form, to differentiate btwn patients/therapists
+  form = SignUpPatientForm()
+  if form.validate_on_submit():
+    # queries for the email submitted in the signup form
+    user = model.session.query(Users).filter(Users.email == form.email.data).first()
+    if user is not None:
+      # checking to see if the email is already in the database
+      user_email = user.email
+      if user_email == form.email.data:
+        flash ("email already exists")
+        return redirect(url_for("patient_form"))
+    # if it is actually a new user then it pulls wtf forms data and assigns it to variables
+    if user == None:
+      first_name = form.first_name.data
+      last_name = form.last_name.data
+      role = form.role.data
       email = form.email.data
       password = form.password.data
       pw_hash = bcrypt.generate_password_hash(password)
@@ -105,7 +146,7 @@ def form():
       model.session.commit()
       flash("Account Creation successful, Login to your account")
       return redirect(url_for("home"))
-  return render_template("signup.html", title="Sign Up Form", form=form)
+  return render_template("patient_form.html", title="Sign Up Form", form=form)
 
 
 @app.route('/patient_account', methods = ["POST", "GET"])
@@ -153,10 +194,6 @@ def fitbit_sync():
                        'e2b38ed6dad443e8bad8efbe3e0e3da5',
                        user_key="5fec83e8ad9ea52dd63b47a42b87b852",
                        user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
-  # user = fitbit.Fitbit('c91f84cd10f04cebad9beb7d4812eb90',
-  #                      'e2b38ed6dad443e8bad8efbe3e0e3da5',
-  #                      user_key="5fec83e8ad9ea52dd63b47a42b87b852",
-  #                      user_secret="de3c9fd790a85a307c6b0ff8e0f0858d")
   # if user.activities(left blank) then it will get the most recent activity for that user
   user_info = user.activities()
   # uses the current_user function from flask-login to get the id of the user who is logged in
@@ -383,26 +420,36 @@ def days_steps_activity():
   current_user_id = current_user.id
   name = current_user.first_name
   days_activity = util.days_activity(current_user_id)
-  steps = days_activity.steps
-  floors = days_activity.floors
-  distance = days_activity.distance
-  time_object = days_activity.date
-  string_time = str(days_activity.date)
-  stripped_time = string_time[:11]
+  if days_activity is None:
+    flash("Sync your fitbit for today's Step Activity")
+  else:
+    steps = days_activity.steps
+    floors = days_activity.floors
+    distance = days_activity.distance
+    time_object = days_activity.date
+    string_time = str(days_activity.date)
+    stripped_time = string_time[:11]
 
   x_list  =[0,1]
   yesterdays_info = util.yesterday_info(current_user_id)
-  yesterdays_steps = yesterdays_info.steps
-  steps_list = [yesterdays_steps, steps]
-  steps_tuple = zip(x_list, steps_list)
+  if yesterdays_info is None:
+    flash("No data from yesterday")
+    yesterdays_steps = 0
+    steps_list = [yesterdays_info, steps]
+    steps_tuple = zip(x_list, steps_list)
 
-  yesterdays_floors = yesterdays_info.floors
-  floors_list = [yesterdays_floors, floors]
-  floors_tuple = zip(x_list, floors_list)
+  else:
+    yesterdays_steps = yesterdays_info.steps
+    steps_list = [yesterdays_steps, steps]
+    steps_tuple = zip(x_list, steps_list)
 
-  yesterdays_distance = yesterdays_info.distance
-  distance_list = [yesterdays_distance, distance]
-  distance_tuple = zip(x_list, distance_list)
+    # yesterdays_floors = yesterdays_info.floors
+    # floors_list = [yesterdays_floors, floors]
+    # floors_tuple = zip(x_list, floors_list)
+
+    # yesterdays_distance = yesterdays_info.distance
+    # distance_list = [yesterdays_distance, distance]
+    # distance_tuple = zip(x_list, distance_list)
 
   bars = ["Yesterday", "Today"]
   format_tuples = zip(x_list,bars)
@@ -412,9 +459,9 @@ def days_steps_activity():
                         distance=distance,
                         stripped_time=stripped_time,
                         steps_tuple=steps_tuple,
-                        format_tuples=format_tuples,
-                        floors_tuple=floors_tuple,
-                        distance_tuple=distance_tuple)
+                        format_tuples=format_tuples)
+                        # floors_tuple=floors_tuple,
+                        # distance_tuple=distance_tuple)
 
 
 @app.route('/daily_distance_activity', methods = ["GET", "POST"])
