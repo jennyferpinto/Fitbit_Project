@@ -1,0 +1,44 @@
+{% extends "base_patient.html" %}
+
+{% block body %}
+
+<style>
+
+</style>
+
+<div id="outer">
+<div id="inner">
+
+<form method = "POST" action = "/weekly_floors" name = "patients"></form>
+
+<h2 id="title"> Floors Climbed This Month </h2>
+
+<div id="chart_container">
+    <div id="y_axis"></div>
+    <div id = "monthly_chart"></div>
+    <div id = "x_axis"></div>
+</div>
+
+<script>
+
+    var MonthlyStepsData = [
+        {% for t in steps_tuples %}
+          { x: {{t[0]|safe}}, y: {{t[1]|safe}} },
+        {% endfor %}
+    ];
+
+var graph = new Rickshaw.Graph({
+    series:
+    renderer: 'area',
+    element: document.querySelector('#graph')
+});
+
+graph.render();
+
+</script>
+</div>
+
+</div>
+</div>
+
+{% endblock %}

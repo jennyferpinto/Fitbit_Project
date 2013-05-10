@@ -46,5 +46,4 @@ def get_access_token(access_code, user_key, user_secret):
     # now the token we get back is an access token
     # parse the response into an OAuthToken object
     access_token = oauth.OAuthToken.from_string(fetch_response(oauth_request,connection))
-
     return access_token

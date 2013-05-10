@@ -170,6 +170,7 @@ def fitbit_access():
   model.session.commit()
   return redirect(auth_url)
 
+
 @app.route('/handshake', methods = ["POST", "GET"])
 @login_required
 def oauth_complete():
@@ -182,6 +183,7 @@ def oauth_complete():
   model.session.commit()
   flash("Congrats! You've authorized your Fitbit!")
   return redirect(url_for("home"))
+
 
 @app.route('/sync_fitbit', methods = ["GET"])
 @login_required
@@ -318,6 +320,19 @@ def therapist_patients_goals():
                         format_tuples=format_tuples)
 
 
+# @app.route('/monthly_view', methods=["POST", "GET"])
+# @login_required
+# def month_graph():
+#   current_user = current_user.id
+#   month_info = util.monthly_activity(current_user)
+#   steps = month_info.steps
+#   points = len(steps)
+#   print points
+#   return render_template("monthly_view.html",
+#                           title="Monthly Activity"
+#                           steps_tuple=steps_tuple)
+
+
 @app.route('/days_goals_graph', methods = ["POST", "GET"])
 @login_required
 def days_goals_graph():
@@ -420,15 +435,12 @@ def days_steps_activity():
   current_user_id = current_user.id
   name = current_user.first_name
   days_activity = util.days_activity(current_user_id)
-  if days_activity is None:
-    flash("Sync your fitbit for today's Step Activity")
-  else:
-    steps = days_activity.steps
-    floors = days_activity.floors
-    distance = days_activity.distance
-    time_object = days_activity.date
-    string_time = str(days_activity.date)
-    stripped_time = string_time[:11]
+  steps = days_activity.steps
+  floors = days_activity.floors
+  distance = days_activity.distance
+  time_object = days_activity.date
+  string_time = str(days_activity.date)
+  stripped_time = string_time[:11]
 
   x_list  =[0,1]
   yesterdays_info = util.yesterday_info(current_user_id)
@@ -437,22 +449,14 @@ def days_steps_activity():
     yesterdays_steps = 0
     steps_list = [yesterdays_info, steps]
     steps_tuple = zip(x_list, steps_list)
-
   else:
     yesterdays_steps = yesterdays_info.steps
     steps_list = [yesterdays_steps, steps]
     steps_tuple = zip(x_list, steps_list)
 
-    # yesterdays_floors = yesterdays_info.floors
-    # floors_list = [yesterdays_floors, floors]
-    # floors_tuple = zip(x_list, floors_list)
-
-    # yesterdays_distance = yesterdays_info.distance
-    # distance_list = [yesterdays_distance, distance]
-    # distance_tuple = zip(x_list, distance_list)
-
   bars = ["Yesterday", "Today"]
   format_tuples = zip(x_list,bars)
+
   return render_template("days_steps_activity.html",
                         floors=floors,
                         steps=steps,
@@ -460,8 +464,6 @@ def days_steps_activity():
                         stripped_time=stripped_time,
                         steps_tuple=steps_tuple,
                         format_tuples=format_tuples)
-                        # floors_tuple=floors_tuple,
-                        # distance_tuple=distance_tuple)
 
 
 @app.route('/daily_distance_activity', methods = ["GET", "POST"])
@@ -479,17 +481,15 @@ def days_distance_activity():
 
   x_list  =[0,1]
   yesterdays_info = util.yesterday_info(current_user_id)
-  yesterdays_steps = yesterdays_info.steps
-  steps_list = [yesterdays_steps, steps]
-  steps_tuple = zip(x_list, steps_list)
-
-  yesterdays_floors = yesterdays_info.floors
-  floors_list = [yesterdays_floors, floors]
-  floors_tuple = zip(x_list, floors_list)
-
-  yesterdays_distance = yesterdays_info.distance
-  distance_list = [yesterdays_distance, distance]
-  distance_tuple = zip(x_list, distance_list)
+  if yesterdays_info is None:
+    flash("No data from yesterday")
+    yesterdays_distance = 0
+    distance_list = [yesterdays_info, steps]
+    distance_tuple = zip(x_list, steps_list)
+  else:
+    yesterdays_distance = yesterdays_info.distance
+    distance_list = [yesterdays_distance, distance]
+    distance_tuple = zip(x_list, distance_list)
 
   bars = ["Yesterday", "Today"]
   format_tuples = zip(x_list,bars)
@@ -498,9 +498,7 @@ def days_distance_activity():
                         steps=steps,
                         distance=distance,
                         stripped_time=stripped_time,
-                        steps_tuple=steps_tuple,
                         format_tuples=format_tuples,
-                        floors_tuple=floors_tuple,
                         distance_tuple=distance_tuple)
 
 
@@ -519,17 +517,15 @@ def days_floors_activity():
 
   x_list  =[0,1]
   yesterdays_info = util.yesterday_info(current_user_id)
-  yesterdays_steps = yesterdays_info.steps
-  steps_list = [yesterdays_steps, steps]
-  steps_tuple = zip(x_list, steps_list)
-
-  yesterdays_floors = yesterdays_info.floors
-  floors_list = [yesterdays_floors, floors]
-  floors_tuple = zip(x_list, floors_list)
-
-  yesterdays_distance = yesterdays_info.distance
-  distance_list = [yesterdays_distance, distance]
-  distance_tuple = zip(x_list, distance_list)
+  if yesterdays_info is None:
+    flash("No data from yesterday")
+    yesterdays_floors = 0
+    floors_list = [yesterdays_info, steps]
+    floors_tuple = zip(x_list, steps_list)
+  else:
+    yesterdays_floors = yesterdays_info.floors
+    floors_list = [yesterdays_floors, floors]
+    floors_tuple = zip(x_list, floors_list)
 
   bars = ["Yesterday", "Today"]
   format_tuples = zip(x_list,bars)
@@ -538,10 +534,8 @@ def days_floors_activity():
                         steps=steps,
                         distance=distance,
                         stripped_time=stripped_time,
-                        steps_tuple=steps_tuple,
                         format_tuples=format_tuples,
-                        floors_tuple=floors_tuple,
-                        distance_tuple=distance_tuple)
+                        floors_tuple=floors_tuple)
 
 @app.route('/therapist_weekly_steps', methods = ["GET", "POST"])
 @login_required

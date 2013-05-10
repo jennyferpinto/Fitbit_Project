@@ -62,15 +62,6 @@
 
 <script>
 
-    // var weeklyFloorsData = [
-    //     {% for a in weekly_floors_data %}
-    //         {
-    //             x: {{ a.date.strftime('%s') }},
-    //             y: {{ a.floors }},
-    //         },
-    //     {% endfor %}
-    // ];
-
     var weeklyFloorsData = [
         {% for t in floor_tuples %}
           { x: {{t[0]|safe}}, y: {{t[1]|safe}} },

@@ -98,3 +98,7 @@ def days_goals(patient_id):
 def days_activity(patient_id):
   days_activity = model.session.query(Activity).order_by(Activity.date.desc()).filter(Activity.user_id == patient_id).first()
   return days_activity
+
+def monthly_activity(patient_id):
+  month = model.session.query(Activity).filter(Activity.user_id == patient_id).all()
+  return month
